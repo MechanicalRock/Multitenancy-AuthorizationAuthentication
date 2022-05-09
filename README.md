@@ -1,3 +1,3 @@
 # MultiTenancy Tutorial
 
-![image](architecture.png)
+![image](architecture-white-background.png)
