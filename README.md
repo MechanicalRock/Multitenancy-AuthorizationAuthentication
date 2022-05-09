@@ -1,1 +1,3 @@
 # MultiTenancyTutorial
+
+![image](architecture.png)
