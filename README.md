@@ -6,11 +6,11 @@ In this write up I'll demonstrate how one might go about using Cognito to develo
 
 ## Background Knowledge
 
-### What is a JWT
+### JSON Web Tokens
 
 A JSON Web Token, JWT, is an open standard that is widely used to securely share authentication information (claims) between a client and a server. The standard is defined in the RFC7519 spec developed by the Internet Engineering Taskforce (IETF). JWTs are signed using cryptography algorithms in order to provide the assurance of integrity by providing a means to detect post creation modification. In addition, JWTs can also be encrypted in order to prevent unauthorized access.
 
-#### Cognito JWTs
+### Cognito JWTs
 
 AWS has adopted and adapted the RFC7519 standard for use with the cognito service.
 When a user successfully authenticates with cognito, cognito creates a session before responding to the authentication request with (3) JWTs - access token, id token and refresh token.
@@ -18,11 +18,11 @@ These tokens can be used to grant access to server-side resources or to the Amaz
 
 Let's take a closer look at the cognito JWTs mentioned above.
 
-#### ID Token
+### ID Token
 
 The ID token is a JWT that contains claims related to the identity of the authenticated user i.e email, phone number and custom attributes. When used to authenticate users of a web app, the signature of the token must be verified before the claims stored in the token can be trusted.
 
-#### Access Token
+### Access Token
 
 The access token is a JWT that contains claims related to the authenticated user's groups and scopes. Access tokens are similar to id tokens with very few exceptions. For example ID tokens allow the use of custom attributes whereas access tokens do not. To get a full understanding of what an access token is and how it differs from an id token refer to the the following resources.
 
