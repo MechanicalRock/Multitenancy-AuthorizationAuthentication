@@ -16,11 +16,11 @@ A JSON Web token contains three sections.
 2. Payload
 3. Signature
 
-```
-111111.222222.333333
-```
+The three sections are encoded as base64url string that are separated by dot characters in order to assume the following form.
 
-The three sections are encoded as base64url string are are separated by dot characters.
+```
+<Header>.<Payload>.<Signature>
+```
 
 ### Cognito JWTs
 
