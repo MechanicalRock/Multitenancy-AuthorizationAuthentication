@@ -48,6 +48,31 @@ A refresh token is used to retrieve new access tokens. Refresh tokens have a def
 
 #### Lambda Authorizer
 
+Lambda Authorizers are custom lambdas that verify claims contained within JWTs. When a request is received by an API gateway instance that is configured to use a lambda authorizer for authorization purposes, the bearer token contained in the request header is forwarded to the lambda authorizer for verification. Once a token is verified, the lambda authorizer should return an output that assumes the following format.
+
+- The principalId is the user id associated with the token sent by the client.
+- If the API uses a usage plan and the apiKeySource is set to AUTHORIZER, the lambda authorizer output must include the usage plan's API keys as the `usageIdentifierKey` property value
+
+```
+{
+  "principalId": "yyyyyyyy", // The principal user identification associated with the token sent by the client.
+  "policyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "execute-api:Invoke",
+        "Effect": "<Allow|Deny>",
+        "Resource": "<aws resource>"
+      }
+    ]
+  },
+  "context": {
+    "key": "value",
+  },
+  "usageIdentifierKey": "{api-key}"
+}
+```
+
 ###### Verifying tokens
 
 ## Scenario: Multi-tenant purchase tracking microservice
