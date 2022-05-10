@@ -5,6 +5,6 @@ For new developers, it is not immediately obvious that there is a difference bet
 ## Scenario: Multi-tenant purchase tracking microservice
 
 Imagine you are a software engineer who works at a company that has just won a contract to develop an e-commerce web application. You have been tasked with developing the authorization and authentication layer of the Web App's backend. Your team's solutions architect has provided the following architecture to help you visualize how the authorization and authentication layer might look. She has also asked you to test that your implementation works by writing some automated tests.
-![image](architecture-white-background.png)
+![image](architecture.png)
 
 ##### Lambda Token Authorizer
