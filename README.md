@@ -13,10 +13,27 @@ A JSON Web Token, JWT, is an open standard that is widely used to securely share
 #### Cognito JWTs
 
 AWS has adopted and adapted the RFC7519 standard for use with the cognito service.
+When a user successfully authenticates with cognito, cognito creates a session before responding to the authentication request with (3) JWTs - access token, id token and refresh token.
+These tokens can be used to grant access to server-side resources or to the Amazon API Gateway. Alternatively they can be exchanged for temporary AWS credentials in order to access other AWS services.
 
-When a user successfully authenticates with cognito, cognito creates a session as well as three (3) JWTs - access token, id token and refresh token.
+Let's take a closer look at the cognito JWTs mentioned above.
+
+###### ID Token
+
+The ID token is a JWT that contains claims related to the identity of the authenticated user i.e email, phone number and custom attributes. When used to authenticate users of a web app, the signature of the token must be verified before the claims stored in the token can be trusted.
+
+###### Access Token
+
+The access token is a JWT that contains claims related to the authenticated user's groups and scopes. Access tokens are similar to id tokens with very few exceptions. For example ID tokens allow the use of custom attributes whereas access tokens do not. To get a full understanding of what an access token is and how it differs from an id token refer to the the following resources.
+
+[using access tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-access-token.html)
+[using id tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-id-token.html)
+
+###### Refresh Token
 
 #### Lambda Authorizer
+
+###### Verifying tokens
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
