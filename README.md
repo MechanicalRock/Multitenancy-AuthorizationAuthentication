@@ -18,11 +18,11 @@ These tokens can be used to grant access to server-side resources or to the Amaz
 
 Let's take a closer look at the cognito JWTs mentioned above.
 
-###### ID Token
+##### ID Token
 
 The ID token is a JWT that contains claims related to the identity of the authenticated user i.e email, phone number and custom attributes. When used to authenticate users of a web app, the signature of the token must be verified before the claims stored in the token can be trusted.
 
-###### Access Token
+##### Access Token
 
 The access token is a JWT that contains claims related to the authenticated user's groups and scopes. Access tokens are similar to id tokens with very few exceptions. For example ID tokens allow the use of custom attributes whereas access tokens do not. To get a full understanding of what an access token is and how it differs from an id token refer to the the following resources.
 
