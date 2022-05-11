@@ -83,7 +83,7 @@ When a request is received by an API gateway instance that is configured to use 
 
 ###### Lambda Authorizer Output Sample
 
-Once the token is verified, the Lambda Authorizer should return an output that assumes an output such as the one provided below.
+Once the token is verified, the Lambda Authorizer should return an output that assumes a structure such as the one provided below.
 
 ```
 {
