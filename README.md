@@ -187,7 +187,7 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 3. The issuer (iss) claim should match your user pool. For example, a user pool created in the us-east-1 Region will have the following iss value:`https://cognito-idp.us-east-1.amazonaws.com/<userpoolID>`
 
-4. Check the token_use claim.
+4. Check the `token_use` claim.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you are only accepting the access token in your web API operations, its value must be access.
 
