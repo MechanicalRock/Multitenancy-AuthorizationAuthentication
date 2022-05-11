@@ -213,9 +213,11 @@ In order to have a secure multi-tenant environment there needs to be some notion
 
 In the context of dynamoDb, the tenant ID will essentially be the partition key that'll be used to group together/ partition customer data. When a customer needs to write/retrieve data to/from the purchase history database they'll use their unique tenant ID to only access data that belongs to them. In essence the tenant ID can be thought of as being analogous to a key that can only open a single door.
 
-|    TenantID    | DatePurchased | products |
-| :------------: | :-----------: | :------: |
-| Customer1-xcv9 |   dd/mm/yy    |    []    |
-| Customer2-dgf1 |   dd/mm/yy    |    []    |
-| Customer1-xcv9 |   dd/mm/yy    |    []    |
-| Customer2-dgf1 |   dd/mm/yy    |    []    |
+The table provided below is a representation of how the data stored in the purchase history will be partitioned. The parameter `tenantId` is used as the partition key while the `dateTimePurchased` parameter is used as a sort key.
+
+|    tenantID    | dateTimePurchased | products |
+| :------------: | :---------------: | :------: |
+| Customer1-xcv9 |  dd-mm-yyTh:m:sZ  |    []    |
+| Customer2-dgf1 |  dd-mm-yyTh:m:sZ  |    []    |
+| Customer1-xcv9 |  dd-mm-yyTh:m:sZ  |    []    |
+| Customer2-dgf1 |  dd-mm-yyTh:m:sZ  |    []    |
