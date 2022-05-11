@@ -98,7 +98,8 @@ The first string is a header string followed by a payload string and then finall
 
 ##### 2. Compare local key ID (kid) to public key ID
 
-    i) Download and store your JWT's corresponding `JWK` (JSON Web Key) using the following url
+&nbsp;&nbsp;&nbsp;&nbsp;
+i) Download and store your JWT's corresponding `JWK` (JSON Web Key) using the following url
 
      https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json
 
