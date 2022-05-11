@@ -240,12 +240,12 @@ The table provided below is a representation of how the data stored in the purch
 
 ### Allow/Deny API Gateway Traffic
 
-When the application's Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on -
+When the application's Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on the following.
 
 1. The outcome of the token verification
 2. The type of user (admin/user)
 
-#### Policies
+#### Lambda Authorizer Resource Policies
 
 ###### Token Verification failed
 
