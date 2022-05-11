@@ -5,7 +5,7 @@
     - [ID Token](#id-token)
     - [Access Token](#access-token)
     - [Refresh Token](#refresh-token)
-  - [Lambda Authorizer](#lambda-authorizer)
+  - [Lambda Authorizer](#lambda-authorizer) + [Lambda Authorizer Input Sample](#lambda-authorizer-input-sample) + [Lambda Authorizer Output Sample](#lambda-authorizer-output-sample)
     - [Verifying tokens](#verifying-tokens)
       - [Verify structure of token](#verify-structure-of-token)
       - [Verify signature](#verify-signature)
