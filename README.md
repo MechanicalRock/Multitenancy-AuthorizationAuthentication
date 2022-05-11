@@ -211,6 +211,13 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
 8. A response is returned by the lambda function.
 
+### Allow/Deny API Gateway Traffic
+
+When the application's Lambda Authorizer is invoked it is expected to return a JSON object that includes a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on:
+
+1. The outcome of the token verification
+2. The type of user (admin/user)
+
 ### Tenant Isolation
 
 #### Tenant ID
