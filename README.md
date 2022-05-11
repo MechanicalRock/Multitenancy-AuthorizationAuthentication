@@ -98,9 +98,9 @@ To validate the JWT signature, the token must first be decoded.
 
 ###### compare local key ID (kid) to public key ID
 
-i. Download and store `JWK, (JSON Web Key)` for your user pool using the following url `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
-
-`NB: substitute region and userPoolId with your user pool's region and user pool Id respectively `
+i. Download and store JWK, (JSON Web Key) for your user pool using the following url  
+ `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
+substitute region and userPoolId with your user pool's region and user pool Id respectively `
 
 ii. Search the downloaded `JWK` for a `kid` that matches the `kid` of your `JWT`
 
