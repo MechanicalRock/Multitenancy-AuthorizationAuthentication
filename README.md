@@ -46,7 +46,7 @@ An access token is a JWT that contains claims related to the authenticated user'
 
 A refresh token is used to retrieve new access tokens. Refresh tokens have a default expiration of 30 days after a user signs into the designated userpool. This can be manually configured while creating an app for the userpool. When a refresh token expires, the the user must re-authenticate by signing in again.
 
-#### Lambda Authorizer
+## Lambda Authorizer
 
 Lambda Authorizers are custom lambdas that verify claims contained within JWTs. When a request is received by an API gateway instance that is configured to use a lambda authorizer for authorization purposes, the bearer token contained in the request header is forwarded to the lambda authorizer for verification. Once a token is verified, the lambda authorizer should return an output that assumes the following format.
 
@@ -73,7 +73,21 @@ Lambda Authorizers are custom lambdas that verify claims contained within JWTs. 
 }
 ```
 
-###### Verifying tokens
+### Verifying tokens
+
+Token verification is done in 3 steps.
+
+1. Verify structure of token
+2. Verify signature
+3. Verify the claims
+
+###### Verify structure of token
+
+Confirm that the token contains three dot separated base64url strings. I the token does not conform to this structure then it should be deemed invalid.
+
+###### Verify signature
+
+###### Verify the claims
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
