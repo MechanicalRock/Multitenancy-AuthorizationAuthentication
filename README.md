@@ -209,4 +209,13 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ### Tenant Isolation
 
-In order to have a truly secure multi-tenant environment there needs to be some notion of tenant resource isolation. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign each user/customer a unique identifier called a tenant ID. When a customer needs to write/retrieve data to/from the purchase history database they'll use their unique tenant ID to only access data that belongs to them. In essence the tenant ID could be conceptually thought of as being analgous to a key
+In order to have a secure multi-tenant environment there needs to be some notion of tenant resource isolation. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign each user/customer a unique identifier called a tenant ID.
+
+In the context of dynamoDb, the tenant ID will essentially be the partition key that'll be used to group together/ partition customer data. When a customer needs to write/retrieve data to/from the purchase history database they'll use their unique tenant ID to only access data that belongs to them. In essence the tenant ID can be thought of as being analogous to a key that can only open a single door.
+
+|    TenantID    | DatePurchased | products |
+| :------------: | :-----------: | :------: |
+| Customer1-xcv9 |   dd/mm/yy    |    []    |
+| Customer2-dgf1 |   dd/mm/yy    |    []    |
+| Customer1-xcv9 |   dd/mm/yy    |    []    |
+| Customer2-dgf1 |   dd/mm/yy    |    []    |
