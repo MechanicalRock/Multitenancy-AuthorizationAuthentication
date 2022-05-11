@@ -100,16 +100,15 @@ The first string is a header string followed by a payload string and then finall
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 i) Download and store your JWT's corresponding `JWK` (JSON Web Key) using the following url
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 substitute region and userPoolId with your user pool's region and user pool ID respectively
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 ii) Search the downloaded `jwks.json` for a `kid` that matches the `kid` of your `JWT`
 
-&nbsp;&nbsp;&nbsp;&nbsp;
-Sample jwks.json
+###### Sample jwks.json
 
 ```
         {
