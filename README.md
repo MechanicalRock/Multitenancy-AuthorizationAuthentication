@@ -90,7 +90,7 @@ The first string is a header string followed by a payload string and then finall
 <Header>.<Payload>.<Signature>
 ```
 
-#### Validate signature
+#### Verify signature
 
 ###### Decode token
 
