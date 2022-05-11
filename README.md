@@ -81,7 +81,7 @@ Token verification is done in 3 steps.
 2. Verify signature
 3. Verify the claims
 
-###### Verify structure of token
+#### Verify structure of token
 
 Confirm that the token contains three dot separated base64url strings. If the token does not conform to this structure then it is invalid.
 The first string is a header string followed by a payload string and then finally the signature string as shown below.
