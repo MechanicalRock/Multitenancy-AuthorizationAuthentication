@@ -135,9 +135,9 @@ ii) Search the downloaded `jwks.json` for a `kid` that matches the `kid` of your
 ##### 3. Compare signature of the issuer to the signature of the tokens
 
 The signature of the issuer is derived from the JWK with a kid that matches the kid of the JWT.
-Each JWK contains an "n" parameter that contains the modulus value of the RSA public key.
-This is the value that'll be used to derive the issuer's signature.
-The JWK will need to be converted to PEM format before that can happen.
+Each `JWK` contains an `n` parameter that contains the `modulus value` of the `RSA public key`.
+This is the value that'll be used to derive the `issuer's signature`.
+The JWK will need to be `converted to PEM format` before that can happen.
 
 #### Verify the claims
 
