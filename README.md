@@ -215,9 +215,9 @@ In the context of dynamoDb, the tenant ID will essentially be the partition key 
 
 The table provided below is a representation of how the data stored in the purchase history will be partitioned. The parameter `tenantId` is used as the partition key while the `dateTimePurchased` parameter is used as a sort key.
 
-|    tenantID    | dateTimePurchased | products |
-| :------------: | :---------------: | :------: |
-| Customer1-xcv9 |  dd-mm-yyTh:m:sZ  |    []    |
-| Customer2-dgf1 |  dd-mm-yyTh:m:sZ  |    []    |
-| Customer1-xcv9 |  dd-mm-yyTh:m:sZ  |    []    |
-| Customer2-dgf1 |  dd-mm-yyTh:m:sZ  |    []    |
+|     tenantID     | dateTimePurchased | products |
+| :--------------: | :---------------: | :------: |
+| `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
+| `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
+| `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
+| `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
