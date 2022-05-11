@@ -149,9 +149,9 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 4. Check the token_use claim.
 
-- If you are only accepting the access token in your web API operations, its value must be access.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you are only accepting the access token in your web API operations, its value must be access.
 
-- If you are only using the ID token, its value must be id.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you are only using the ID token, its value must be id.
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
