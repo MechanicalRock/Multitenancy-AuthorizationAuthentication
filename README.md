@@ -1,3 +1,23 @@
+- [AWS Authorization and Authentication Tutorial](#aws-authorization-and-authentication-tutorial)
+  - [Background Knowledge](#background-knowledge)
+    - [JSON Web Tokens](#json-web-tokens)
+    - [Cognito JWTs](#cognito-jwts)
+    - [ID Token](#id-token)
+    - [Access Token](#access-token)
+    - [Refresh Token](#refresh-token)
+  - [Lambda Authorizer](#lambda-authorizer)
+    - [Verifying tokens](#verifying-tokens)
+      - [Verify structure of token](#verify-structure-of-token)
+      - [Verify signature](#verify-signature)
+        - [1. Decode token](#1-decode-token)
+        - [2. Compare local key ID (kid) to public key ID](#2-compare-local-key-id--kid--to-public-key-id)
+          - [Sample jwks.json](#sample-jwksjson)
+        - [3. Compare signature of the issuer to the signature of the tokens](#3-compare-signature-of-the-issuer-to-the-signature-of-the-tokens)
+      - [Verify the claims](#verify-the-claims)
+  - [Scenario: Multi-tenant purchase tracking microservice](#scenario--multi-tenant-purchase-tracking-microservice)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 # AWS Authorization and Authentication Tutorial
 
 For new developers, it is not immediately obvious that there is a difference between the terms Authorization and Authentication. Although related, these terms actually refer to two different concepts. Authentication determines if the login credentials provided by a user are allowed to enter the system while authorization determines what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorization is about what they are allowed to access. AWS offers a service called Amazon Cognito for both scenarios.
@@ -155,10 +175,7 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
-Imagine you are a software engineer who works at a company that has just won a contract to develop an e-commerce web application.
-You have been tasked with developing the authorization and authentication layer of the Web App's backend.
-Your team's solutions architect has provided the following architecture to help you visualize how the authorization and authentication layer might look.
-She has also asked you to write validation tests to prove that your implementation works as expected.
+Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer purchases. A quick architectural diagram has been provided below
 ![image](architecture.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
