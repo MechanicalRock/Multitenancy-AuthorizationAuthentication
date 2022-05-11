@@ -213,7 +213,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ### Allow/Deny API Gateway Traffic
 
-When the application's Lambda Authorizer is invoked it is expected to return a JSON object that includes a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on:
+When the application's Lambda Authorizer is invoked it is expected to return a JSON object that includes a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on -
 
 1. The outcome of the token verification
 2. The type of user (admin/user)
