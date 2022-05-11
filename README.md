@@ -92,22 +92,22 @@ The first string is a header string followed by a payload string and then finall
 
 #### Verify signature
 
-###### Decode token
+1. ###### Decode token
 
 To validate the JWT signature, the token must first be decoded.
 
-###### Compare local key ID (kid) to public key ID
+2. ###### Compare local key ID (kid) to public key ID
 
-i. Download and store JWK, (JSON Web Key) for your user pool using the following url  
+i) Download and store your JWT's corresponding `JWK` (JSON Web Key) using the following url  
  `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
 
-    substitute region and userPoolId with your user pool's region and user pool Id respectively `
+    substitute region and userPoolId with your user pool's region and user pool ID respectively
 
-ii. Search the downloaded `JWK` for a `kid` that matches the `kid` of your `JWT`
+ii) Search the downloaded `JWK` for a `kid` that matches the `kid` of your `JWT`
 
-###### compare signature of the issuer to the signature of the tokens
+3. ###### compare signature of the issuer to the signature of the tokens
 
-#### Verify the claims
+s#### Verify the claims
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
