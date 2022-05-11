@@ -211,13 +211,6 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
 8. A response is returned by the lambda function.
 
-### Allow/Deny API Gateway Traffic
-
-When the application's Lambda Authorizer is invoked it is expected to return a JSON object that includes a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on -
-
-1. The outcome of the token verification
-2. The type of user (admin/user)
-
 ### Tenant Isolation
 
 #### Tenant ID
@@ -244,3 +237,18 @@ The table provided below is a representation of how the data stored in the purch
 | `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
 | `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
 | `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
+
+### Allow/Deny API Gateway Traffic
+
+When the application's Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on -
+
+1. The outcome of the token verification
+2. The type of user (admin/user)
+
+#### Policies
+
+###### Token Verification failed
+
+###### Token Verification passed - Admin
+
+###### Token Verification passed - User
