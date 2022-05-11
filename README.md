@@ -211,9 +211,15 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 #### Tenant ID
 
-#### Multi-tenant DynamoDB table
-
 In order to have a secure multi-tenant environment there needs to be some notion of tenant resource isolation. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign each user/customer a unique identifier called a tenant ID.
+
+The assignment of a tenant id can be carried out during the user registration stage. A Randomly generated string can be generated and then attached to the user as a custom attribute. After successful authentication the `tenantID` custom attribute becomes available via the `ID Token JWT ` as a parameter with the following key `custom:tenantID`.
+
+#### Lambda Context Objects
+
+In order to make use of this idea of a `tenantID` it is important to realise that there needs to be some way of storing/retrieving the correct `tenantID` parameter and loading it into the running lambda's memory. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler. Context objects can be modified to include custom parameters that can then be accessed during run time. This is how we'll propagate the `tenantId` from its retrieval point (Lambda Authorizer) to the lambda that directly interacts with the purchase history table.
+
+#### Multi-tenant DynamoDB table
 
 In the context of dynamoDb, the tenant ID will essentially be the partition key that'll be used to group together/ partition customer data. When a customer needs to write/retrieve data to/from the purchase history database they'll use their unique tenant ID to only access data that belongs to them. In essence the tenant ID can be thought of as being analogous to a key that can only open a single door.
 
@@ -225,7 +231,3 @@ The table provided below is a representation of how the data stored in the purch
 | `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
 | `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
 | `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
-
-#### Lambda Context Objects
-
-In order to make use of this idea of a `tenantID` it is important to realise that there needs to be some way of storing/retrieving the correct `tenantID` parameter and loading it into the running lambda's memory. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler. Context objects can be modified to include custom parameters that can then be accessed during run time. This is how we'll propagate the `tenantId` from its retrieval point (Lambda Authorizer) to the lambda that directly interacts with the purchase history table.
