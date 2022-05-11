@@ -215,13 +215,13 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 #### Tenant ID
 
-To create a secure `multi-tenant` environment there needs to be some notion of `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign a unique identifier called `Tenant ID` to each user/customer. The aforementioned `Tenant ID` is generated and then attached to the calling user as a `custom attribute` during the registration stage.
+To create a secure `multi-tenant` environment there needs to be some notion of `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign a unique identifier called `tenantID` to each user/customer. The aforementioned `tenantID` is generated and then attached to the calling user as a `custom attribute` during the registration stage.
 
-After successful authentication the `Tenant ID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so,the application will exclusively use id tokens for authorization.
+After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so,the application will exclusively use id tokens for authorization.
 
 #### Lambda Context Objects
 
-In order to make use of this idea of a `Tenant ID` it is important to realise that there needs to be some way of retrieving the correct `Tenant ID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler.
+In order to make use of this idea of a `tenantID` it is important to realise that there needs to be some way of retrieving the correct `tenantID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler.
 
 Context objects can be modified to include custom parameters that can then be accessed during run time. With this in mind, it should be relatively straight forward to use the application's Lambda Authorizer to forward the retrieved `tenantID` as a custom parameter within the JSON output of the lambda authorizer.
 
