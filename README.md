@@ -68,7 +68,8 @@ A refresh token is used to retrieve new access tokens. Refresh tokens have a def
 
 ## Lambda Authorizer
 
-Lambda Authorizers are custom lambdas that verify claims contained within JWTs. When a request is received by an API gateway instance that is configured to use a lambda authorizer for authorization purposes, the bearer token contained in the request header is forwarded to the lambda authorizer for verification. Once a token is verified, the lambda authorizer should return an output that assumes the following format.
+There are two types of Lambda Authorizers, `REQUEST` based and `TOKEN` based. In this write up we'll only look at the latter. A token based lambda authorizer receives the caller's identity in the form of a bearer token included in the request's header section while a request based lambda authorizer receives the caller's identity in a combination of headers and query string parameters.
+When a request is received by an API gateway instance that is configured to use a lambda authorizer (`TOKEN` type) for authorization purposes, the bearer token contained in the request header is forwarded to the lambda authorizer for verification. The forwarded payload is a JSON object that assumes the structure shown in the sample input provided below. Once the token is verified, the Lambda Authorizer should return an output that assumes an output such as the one provided below.
 
 ###### Lambda Authorizer Input Sample
 
