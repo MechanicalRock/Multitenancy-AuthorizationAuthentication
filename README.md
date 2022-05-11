@@ -83,11 +83,29 @@ Token verification is done in 3 steps.
 
 ###### Verify structure of token
 
-Confirm that the token contains three dot separated base64url strings. I the token does not conform to this structure then it should be deemed invalid.
+Confirm that the token contains three dot separated base64url strings. If the token does not conform to this structure then it is invalid.
+The first string is a header string followed by a payload string and then finally the signature string as shown below.
 
-###### Verify signature
+```
+<Header>.<Payload>.<Signature>
+```
 
-###### Verify the claims
+#### Validate signature
+
+###### Decode token
+
+To validate the JWT signature, the token must first be decoded.
+
+###### compare local key ID (kid) to public key ID
+
+1. Download and store `JWK, (JSON Web Key)` for your user pool using the following url ` https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
+   `NB: substitute region and userPoolId with your user pool's region and user pool Id respectively `
+
+2. Search the downloaded `JWK` for a `kid` that matches the `kid` of your `JWT`
+
+###### compare signature of the issuer to the signature of the tokens
+
+#### Verify the claims
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
