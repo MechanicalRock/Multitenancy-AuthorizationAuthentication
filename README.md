@@ -7,10 +7,8 @@
     - [ID Token](#id-token)
     - [Access Token](#access-token)
     - [Refresh Token](#refresh-token)
-  - [Lambda Authorizer](#lambda-authorizer)
-    - [Lambda Authorizer Input Sample](#lambda-authorizer-input-sample)
-    - [Lambda Authorizer Output Sample](#lambda-authorizer-output-sample)
-    * [Verifying tokens](#verifying-tokens)
+  - [Lambda Authorizer](#lambda-authorizer) + [Lambda Authorizer Input Sample](#lambda-authorizer-input-sample) + [Lambda Authorizer Output Sample](#lambda-authorizer-output-sample)
+    - [Verifying tokens](#verifying-tokens)
       - [Verify structure of token](#verify-structure-of-token)
       - [Verify signature](#verify-signature)
         - [1. Decode token](#1-decode-token)
@@ -19,6 +17,10 @@
         - [3. Compare signature of the issuer to the signature of the tokens](#3-compare-signature-of-the-issuer-to-the-signature-of-the-tokens)
       - [Verify the claims](#verify-the-claims)
   - [Scenario: Multi-tenant purchase tracking microservice](#scenario--multi-tenant-purchase-tracking-microservice)
+    - [Tenant Isolation](#tenant-isolation)
+      - [Tenant ID](#tenant-id)
+      - [Lambda Context Objects](#lambda-context-objects)
+      - [Multi-tenant DynamoDB table](#multi-tenant-dynamodb-table)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -207,17 +209,17 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
 8. A response is returned by the lambda function.
 
-### Tenant Isolation:
+### Tenant Isolation
 
 #### Tenant ID
 
 In order to have a secure multi-tenant environment there needs to be some notion of tenant resource isolation. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem I decided to assign each user/customer a unique identifier called a tenant ID.
 
-The assignment of a tenant id can be carried out during the user registration stage. A Randomly generated string can be generated and then attached to the user as a custom attribute. After successful authentication the `tenantID` custom attribute becomes available via the `ID Token JWT ` as a parameter with the following key `custom:tenantID`.
+The assignment of a `tenantId` is carried out during the user registration stage. A unique identifier is generated and then attached to the user as a custom attribute. After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `id token JWT` as a parameter with the following key `custom:tenantID`.
 
 #### Lambda Context Objects
 
-In order to make use of this idea of a `tenantID` it is important to realise that there needs to be some way of storing/retrieving the correct `tenantID` parameter and loading it into the running lambda's memory. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler. Context objects can be modified to include custom parameters that can then be accessed during run time. This is how we'll propagate the `tenantId` from its retrieval point (Lambda Authorizer) to the lambda that directly interacts with the purchase history table.
+In order to make use of this idea of a `tenantID` it is important to realise that there needs to be some way of retrieving the correct `tenantID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler. Context objects can be modified to include custom parameters that can then be accessed during run time. This is how we'll propagate the `tenantId` from its retrieval point (Lambda Authorizer) to the lambda that directly interacts with the purchase history table.
 
 #### Multi-tenant DynamoDB table
 
