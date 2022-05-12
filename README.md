@@ -44,7 +44,7 @@
 
 ### Testing
 
-###### Use aws cli to add user to cognito userpool for testing purposes
+###### Using aws cli, add users to the userpool for testing purposes
 
 ###### admin user
 
