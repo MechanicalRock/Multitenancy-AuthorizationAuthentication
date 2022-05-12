@@ -218,7 +218,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 ###### install aws cli
 
     instructions
-    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.ht
+    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 ###### install aws-cdk cli
 
