@@ -28,35 +28,36 @@
 
 # AWS Authorization and Authentication Tutorial
 
-For new developers, it is not immediately obvious that there is a difference between the terms Authorization and Authentication. Although related, these terms actually refer to two different concepts. Authentication determines if the login credentials provided by a user are allowed to enter the system while authorization determines what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorization is about what they are allowed to access. AWS offers a service called Amazon Cognito for both scenarios.
+For new developers, it is not immediately obvious that there is a difference between the terms Authorization and Authentication. Although related, these terms actually refer to two different concepts. Authentication verifies a user's identity whereas authorization verifies what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorization is about what they are allowed to access once they are in.
 
-In this write up I'll demonstrate how one might go about using Cognito to develop the authentication and authorization layer of a web app that tracks purchases for multiple users.
+In this write up I'll demonstrate how one might go about using Cognito to develop the authentication and authorization layer in a contextualised scenario.
 
 ## Background Knowledge
 
 ### JSON Web Tokens
 
-A JSON Web Token, JWT, is an open standard that is widely used to securely share authentication information (claims) between a client and a server. The standard is defined in the RFC7519 specification developed by the Internet Engineering Taskforce (IETF). JWTs are signed using cryptography algorithms in order to provide the assurance of integrity by providing a means to detect post creation modification. In addition, JWTs can also be encrypted in order to prevent unauthorized access.
+JWT, JSON Web Token, is an open standard that is widely used to securely share authentication information (claims) between client and server. The standard is defined in the RFC7519 specification developed by the Internet Engineering Taskforce (IETF).
 
-A JSON Web token contains three sections.
+Valid JWTs contains three sections that are encoded as base64url strings separated by dot characters as shown below
+
+```
 
 1. Header
 2. Payload
 3. Signature
 
-The three sections are encoded as base64url string that are separated by dot characters in order to assume the following form.
-
-```
 <Header>.<Payload>.<Signature>
 ```
 
 ### Cognito JWTs
 
-AWS has adopted and adapted the RFC7519 standard for use with the cognito service.
-When a user successfully authenticates with cognito, cognito creates a session before responding to the authentication request with (3) JWTs - access token, id token and refresh token.
-These tokens can be used to grant access to server-side resources or to the Amazon API Gateway. Alternatively they can be exchanged for temporary AWS credentials in order to access other AWS services.
+AWS has adopted and adapted the RFC7519 standard for use with the Cognito service.
+When a user successfully authenticates with cognito, cognito does the following -
 
-Let's take a closer look at the cognito JWTs mentioned above.
+1. creates a session
+2. returns (3) JWTs - access token, id token and refresh token.
+
+The tokens created by cognito can be used to grant access to server-side resources such as API Gateway resource paths. Alternatively they can be exchanged for temporary AWS credentials in order to access other AWS services.
 
 ### ID Token
 
@@ -64,7 +65,7 @@ An ID token is a JWT that contains claims related to the identity of the authent
 
 ### Access Token
 
-An access token is a JWT that contains claims related to the authenticated user's groups and scopes. Access tokens are similar to id tokens with very few exceptions. For example ID tokens allow the use of custom attributes whereas access tokens do not. To get a full understanding of what an access token is and how it differs from an id token refer to the the following resources.
+An access token is a JWT that contains claims related to the authenticated user's groups and scopes. Access tokens are similar to id tokens with very few exceptions. For example ID tokens allow the use of custom attributes whereas access tokens do not. To get a full understanding of what access tokens are and how they differ from id tokens refer to the the following resources.
 
 - [using access tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-access-token.html)
 
@@ -72,12 +73,17 @@ An access token is a JWT that contains claims related to the authenticated user'
 
 ### Refresh Token
 
-A refresh token is used to retrieve new access tokens. Refresh tokens have a default expiration of 30 days after a user signs into the designated userpool. This can be manually configured while creating an app for the userpool. When a refresh token expires, the the user must re-authenticate by signing in again.
+A refresh token is used to retrieve new access tokens. Refresh tokens have a default expiration of 30 days after a user signs into the designated userpool. This can be manually configured while creating an app for the userpool.
+
+When a refresh token expires, the user must re-authenticate by signing in again.
 
 ## Lambda Authorizer
 
-There are two types of Lambda Authorizers, `REQUEST` based and `TOKEN` based. In this write up we'll only look at the latter. A token based lambda authorizer receives the caller's identity in the form of a bearer token included in the request's header section while a request based lambda authorizer receives the caller's identity in a combination of headers and query string parameters.
-When a request is received by an API gateway instance that is configured to use a lambda authorizer (`TOKEN`) for authorization purposes, the `bearer token` contained in the request header is forwarded to the lambda authorizer for verification. The forwarded payload is a JSON object that assumes the structure shown in the sample input provided below.
+There are two types of Lambda Authorizers, `REQUEST` based and `TOKEN` based. This write up focuses on the latter.
+
+A token based lambda authorizer receives the caller's identity in the form of a bearer token included in the request's header section while a request based lambda authorizer receives the caller's identity in a combination of headers and query string parameters.
+
+When a request is received by an API gateway instance that is configured to use a `TOKEN` lambda authorizer for authorization purposes, the `bearer token` contained in the request header is forwarded to the lambda authorizer for verification. The forwarded payload is a JSON object that assumes a structure similar to the one shown in the `Input Sample` code block shown below .
 
 ###### Lambda Authorizer Input Sample
 
@@ -199,7 +205,7 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
-Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer purchases. A quick architectural diagram has been provided below.
+Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer purchases. This microservice can potentially be split into two read/write lambdas. An architectural diagram for this scenario has been provided below.
 ![image](architecture.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
