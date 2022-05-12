@@ -30,11 +30,9 @@
 
 ### Setup
 
-###### install aws cli
+###### [Install aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-[instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-
-###### install aws-cdk cli
+###### Install aws-cdk cli
 
     npm install -g aws-cdk             # install latest version
     npm install -g aws-cdk@X.YY.Z      # install specific version
