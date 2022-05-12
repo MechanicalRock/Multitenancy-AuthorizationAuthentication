@@ -28,16 +28,16 @@
 
 # AWS Authorization and Authentication Tutorial
 
-### Setup
+### 1. Setup
 
-###### 1. [Install aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+###### a. [Install aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-###### 2. Install aws-cdk cli
+###### b. Install aws-cdk cli
 
     npm install -g aws-cdk             # install latest version
     npm install -g aws-cdk@X.YY.Z      # install specific version
 
-### deploy
+### 2. deploy
 
     npm run deploy
 
