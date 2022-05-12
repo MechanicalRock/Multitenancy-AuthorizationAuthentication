@@ -229,9 +229,11 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
     npm run deploy
 
-### Testing
+```diff
+- Skip this step if you are not interested in extending the test suite
+```
 
-##### Skip this step if you are not interested in extending the test suite
+### Testing
 
 ###### Add user to cognito userpool
 
