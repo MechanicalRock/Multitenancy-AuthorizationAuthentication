@@ -40,7 +40,7 @@
     npm install -g aws-cdk             # install latest version
     npm install -g aws-cdk@X.YY.Z      # install specific version
 
-###### deploy
+### deploy
 
     npm run deploy
 
