@@ -32,8 +32,7 @@
 
 ###### install aws cli
 
-    instructions
-    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+[instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ###### install aws-cdk cli
 
