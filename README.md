@@ -213,7 +213,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ## Deployment
 
-### Requirements
+### Setup
 
 ###### install aws cli
 
@@ -224,6 +224,35 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
     npm install -g aws-cdk             # install latest version
     npm install -g aws-cdk@X.YY.Z      # install specific version
+
+###### deploy
+
+    npm run deploy
+
+### Testing
+
+##### Skip this step if you are not interested in extending the test suite
+
+###### Add user to cognito userpool
+
+```
+  aws cognito-idp admin-update-user-attributes \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username darth.vader@example.com \
+  --user-attributes Name="custom:tenantId",Value="companyA-3fvj" \
+     Name="custom:org",Value="companyA" \
+     Name="given_name", Value="Anakin"
+      Name="family_name",Value="Skywalker"
+
+```
+
+###### create .env file with the following parameters,
+
+    Region="xxxxxx"
+    userPoolId="xxxxxxx"
+    COGNITO_USER_NAME='xxxxxxx'
+    COGNITO_USER_PASSWORD='xxxxxxxx'
+    COGNITO_CLIENT_ID='xxxxxxxxx'
 
 ### Tenant Isolation
 
