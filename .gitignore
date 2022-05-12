@@ -1,0 +1,24 @@
+
+!jest.config.js
+.cdk.staging
+.coverage/
+.dist/
+.DS_Store
+.env
+.lint/
+.nyc_output/
+.test/
+.vscode/*.log
+*.d.ts
+*.pem
+# CDK asset staging directory
+cdk.out
+coverage
+dist/
+infrastructure/dist/
+node_modules
+npm-debug.log
+ts-jest.log
+.envrc
+.notes
+*/node_modules

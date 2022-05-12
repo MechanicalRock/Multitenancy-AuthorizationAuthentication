@@ -1,0 +1,47 @@
+{
+  "name": "multitenancytutorial",
+  "version": "1.0.0",
+  "description": "- [AWS Authorization and Authentication Tutorial](#aws-authorization-and-authentication-tutorial)   - [Background Knowledge](#background-knowledge)     - [JSON Web Tokens](#json-web-tokens)     - [Cognito JWTs](#cognito-jwts)     - [ID Token](#id-token)     - [Access Token](#access-token)     - [Refresh Token](#refresh-token)   - [Lambda Authorizer](#lambda-authorizer)     - [Lambda Authorizer Input Sample](#lambda-authorizer-input-sample)     - [Lambda Authorizer Output Sample](#lambda-authorizer-output-sample)     - [Verifying tokens](#verifying-tokens)       - [Verify structure of token](#verify-structure-of-token)       - [Verify signature](#verify-signature)         - [1. Decode token](#1-decode-token)         - [2. Compare local key ID (kid) to public key ID](#2-compare-local-key-id--kid--to-public-key-id)           - [Sample jwks.json](#sample-jwksjson)         - [3. Compare signature of the issuer to the signature of the tokens](#3-compare-signature-of-the-issuer-to-the-signature-of-the-tokens)       - [Verify the claims](#verify-the-claims)   * [Scenario: Multi-tenant purchase tracking microservice](#scenario--multi-tenant-purchase-tracking-microservice)     - [Tenant Isolation](#tenant-isolation)       - [Tenant ID](#tenant-id)       - [Lambda Context Objects](#lambda-context-objects)       - [Multi-tenant DynamoDB table](#multi-tenant-dynamodb-table)",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --testNamePattern=logic"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MechanicalRock/MultiTenancyTutorial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MechanicalRock/MultiTenancyTutorial/issues"
+  },
+  "homepage": "https://github.com/MechanicalRock/MultiTenancyTutorial#readme",
+  "devDependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.21.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.21.0",
+    "@types/aws-lambda": "^8.10.97",
+    "@types/jest": "^27.5.1",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^10.17.60",
+    "@types/source-map-support": "^0.5.3",
+    "amazon-cognito-identity-js": "^5.2.8",
+    "aws-lambda": "^1.0.7",
+    "axios": "^0.21.1",
+    "cdk-assume-role-credential-plugin": "^1.2.3",
+    "dotenv": "^16.0.0",
+    "dotenvrc": "^1.0.1",
+    "jest": "^27.5.1",
+    "jest-runner-groups": "^2.1.0",
+    "moment": "^2.29.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.6.4",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.87.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.5"
+  }
+}
