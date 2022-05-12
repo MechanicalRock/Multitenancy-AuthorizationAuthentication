@@ -28,11 +28,71 @@
 
 # AWS Authorization and Authentication Tutorial
 
+## Deployment
+
+### Setup
+
+###### install aws cli
+
+    instructions
+    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+###### install aws-cdk cli
+
+    npm install -g aws-cdk             # install latest version
+    npm install -g aws-cdk@X.YY.Z      # install specific version
+
+###### deploy
+
+    npm run deploy
+
+### Testing
+
+###### Use aws cli to add user to cognito userpool for testing purposes
+
+###### admin user
+
+```
+  aws cognito-idp admin-update-user-attributes \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username <enter_email_here> \
+  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
+     Name="custom:org",Value="galactic empire" \
+     Name="given_name", Value="Anakin" \
+     Name="custom:group",Value="user" \
+     Name="family_name",Value="Skywalker"
+
+```
+
+###### regular user
+
+```
+  aws cognito-idp admin-update-user-attributes \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username <enter_2nd_email_here> \
+  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
+     Name="custom:org",Value="galactic empire" \
+     Name="given_name", Value="Sheev" \
+     Name="custom:group",Value="user" \
+     Name="family_name",Value="Sidious"
+
+```
+
+###### Add .env to your project's root
+
+    Region="xxxxxx"
+    userPoolId="xxxxxxx"
+    COGNITO_USER_NAME='xxxxxxx'
+    COGNITO_USER_PASSWORD='xxxxxxxx'
+    COGNITO_CLIENT_ID='xxxxxxxxx'
+
+## Background Knowledge
+
+###
+
 For new developers, it is not immediately obvious that there is a difference between the terms Authorization and Authentication. Although related, these terms actually refer to two different concepts. Authentication verifies a user's identity whereas authorization verifies what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorization is about what they are allowed to access once they are in.
 
 In this write up I'll demonstrate how one might go about using Cognito to develop the authentication and authorization layer in a contextualised scenario.
-
-## Background Knowledge
 
 ### JSON Web Tokens
 
@@ -216,64 +276,6 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 6. API Gateway evaluates the policy and forwards the request to a lambda function along with the authorizer generated context.
 7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
 8. A response is returned by the lambda function.
-
-## Deployment
-
-### Setup
-
-###### install aws cli
-
-    instructions
-    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-
-###### install aws-cdk cli
-
-    npm install -g aws-cdk             # install latest version
-    npm install -g aws-cdk@X.YY.Z      # install specific version
-
-###### deploy
-
-    npm run deploy
-
-### Testing
-
-###### Use aws cli to add user to cognito userpool for testing purposes
-
-###### admin user
-
-```
-  aws cognito-idp admin-update-user-attributes \
-  --user-pool-id YOUR_USER_POOL_ID \
-  --username <enter_email_here> \
-  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
-     Name="custom:org",Value="galactic empire" \
-     Name="given_name", Value="Anakin" \
-     Name="custom:group",Value="user" \
-     Name="family_name",Value="Skywalker"
-
-```
-
-###### regular user
-
-```
-  aws cognito-idp admin-update-user-attributes \
-  --user-pool-id YOUR_USER_POOL_ID \
-  --username <enter_2nd_email_here> \
-  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
-     Name="custom:org",Value="galactic empire" \
-     Name="given_name", Value="Sheev" \
-     Name="custom:group",Value="user" \
-     Name="family_name",Value="Sidious"
-
-```
-
-###### Add .env to your project's root
-
-    Region="xxxxxx"
-    userPoolId="xxxxxxx"
-    COGNITO_USER_NAME='xxxxxxx'
-    COGNITO_USER_PASSWORD='xxxxxxxx'
-    COGNITO_CLIENT_ID='xxxxxxxxx'
 
 ### Tenant Isolation
 
