@@ -211,6 +211,20 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
 8. A response is returned by the lambda function.
 
+## Deployment
+
+### Requirements
+
+###### install aws cli
+
+    instructions
+    https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.ht
+
+###### install aws-cdk cli
+
+    npm install -g aws-cdk             # install latest version
+    npm install -g aws-cdk@X.YY.Z      # install specific version
+
 ### Tenant Isolation
 
 #### Tenant ID
