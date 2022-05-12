@@ -233,14 +233,31 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ###### Use aws cli to add user to cognito userpool for testing purposes
 
+###### admin user
+
 ```
   aws cognito-idp admin-update-user-attributes \
   --user-pool-id YOUR_USER_POOL_ID \
-  --username darth.vader@example.com \
-  --user-attributes Name="custom:tenantId",Value="companyA-3fvj" \
-     Name="custom:org",Value="companyA" \
-     Name="given_name", Value="Anakin"
-      Name="family_name",Value="Skywalker"
+  --username <enter_email_here> \
+  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
+     Name="custom:org",Value="galactic empire" \
+     Name="given_name", Value="Anakin" \
+     Name="custom:group",Value="user" \
+     Name="family_name",Value="Skywalker"
+
+```
+
+###### regular user
+
+```
+  aws cognito-idp admin-update-user-attributes \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username <enter_2nd_email_here> \
+  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
+     Name="custom:org",Value="galactic empire" \
+     Name="given_name", Value="Sheev" \
+     Name="custom:group",Value="user" \
+     Name="family_name",Value="Sidious"
 
 ```
 
