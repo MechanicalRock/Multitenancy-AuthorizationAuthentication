@@ -28,8 +28,6 @@
 
 # AWS Authorization and Authentication Tutorial
 
-## Deployment
-
 ### Setup
 
 ###### install aws cli
