@@ -244,7 +244,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ```
 
-###### create .env file with the following parameters,
+###### .env to your project's root
 
     Region="xxxxxx"
     userPoolId="xxxxxxx"
