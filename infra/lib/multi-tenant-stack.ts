@@ -125,7 +125,7 @@ export class multitenantStack extends cdk.Stack {
       tracing: lambda.Tracing.ACTIVE,
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'handler',
-      entry: path.join(__dirname, '/../../../src/lambdas/readTable.ts'),
+      entry: path.join(__dirname, '/../../src/lambdas/readTable.ts'),
     })
 
     // Write dynamoDB table
@@ -140,7 +140,7 @@ export class multitenantStack extends cdk.Stack {
       tracing: lambda.Tracing.ACTIVE,
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'handler',
-      entry: path.join(__dirname, '/../../../src/lambdas/writeTable.ts'),
+      entry: path.join(__dirname, '/../../src/lambdas/writeTable.ts'),
     })
 
     // Authorization Lambda
@@ -155,7 +155,7 @@ export class multitenantStack extends cdk.Stack {
       tracing: lambda.Tracing.ACTIVE,
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'handler',
-      entry: path.join(__dirname, '/../../../src/lambdaAuthorizer.ts'),
+      entry: path.join(__dirname, '/../../src/auth/lambdaAuthorizer.ts'),
     })
     const authorizerRole = new Role(this, 'authorizerRole', {
       roleName: 'authorizerRole',
