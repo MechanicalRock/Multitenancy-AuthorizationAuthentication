@@ -231,7 +231,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 ### Testing
 
-###### Add user to cognito userpool
+###### Use aws cli to add user to cognito userpool for testing purposes
 
 ```
   aws cognito-idp admin-update-user-attributes \
