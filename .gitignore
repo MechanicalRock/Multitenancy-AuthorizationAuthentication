@@ -22,4 +22,4 @@ ts-jest.log
 .envrc
 .notes
 */node_modules
-**/ddb
+**/ddb/dynamodb_local

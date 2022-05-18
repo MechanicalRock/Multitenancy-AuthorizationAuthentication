@@ -1,11 +1,4 @@
-import {
-  IAuth,
-  IClaim,
-  IJwtVerificationResult,
-  IMapOfKidToPublicKey,
-  IPublicKeys,
-  ITokenHeader,
-} from '../ports/authPort'
+import { IAuth, IClaim, IJwtVerificationResult, IMapOfKidToPublicKey, IPublicKeys, ITokenHeader } from '../ports/authPort'
 import { PolicyDocument } from 'aws-lambda'
 import * as Axios from 'axios'
 import * as jwt from 'jsonwebtoken'
@@ -26,6 +19,7 @@ export class AuthAdapter implements IAuth {
   allowPolicy(): PolicyDocument {
     const policyDocument: PolicyDocument = {
       Version: '2012-10-17',
+
       Statement: [
         {
           Action: 'execute-api:Invoke',
@@ -73,14 +67,11 @@ export class AuthAdapter implements IAuth {
       const tokenSections = jwtToken.split('.')
       if (tokenSections.length !== 3) {
         return {
-          error:
-            'token is invalid, token must be of the form <header>.<payload>.<signature>',
+          error: 'token is invalid, token must be of the form <header>.<payload>.<signature>',
           isValid: false,
         }
       }
-      const headerString = Buffer.from(tokenSections[0], 'base64').toString(
-        'utf8',
-      )
+      const headerString = Buffer.from(tokenSections[0], 'base64').toString('utf8')
       const headerJSON = JSON.parse(headerString) as ITokenHeader
       const publicKeys = await this.getPublicKeys()
       const publicKey = publicKeys[headerJSON.kid]

@@ -1,10 +1,4 @@
-import {
-  APIGatewayTokenAuthorizerEvent,
-  AuthResponse,
-  PolicyDocument,
-  Statement,
-  APIGatewayAuthorizerResultContext,
-} from 'aws-lambda'
+import { APIGatewayTokenAuthorizerEvent, AuthResponse, PolicyDocument, Statement, APIGatewayAuthorizerResultContext } from 'aws-lambda'
 
 export interface ITokenHeader {
   kid: string
@@ -64,6 +58,14 @@ export interface IJwtVerificationResult {
 interface Iname {
   firstName?: string
   lastName?: string
+}
+
+export interface IContext {
+  org: string
+  tenantId: string
+  firstName: string
+  lastName: string
+  token_use: string
 }
 
 export interface IAuth {

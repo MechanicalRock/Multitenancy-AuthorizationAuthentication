@@ -1,4 +1,4 @@
-import { DynamoDbAdapter } from '../../lambdas/ddbAdapter'
+import { DynamoDbAdapter } from '../../db/ddbAdapter'
 import { DeleteCommand, DeleteCommandInput, DynamoDBDocumentClient, GetCommandOutput, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBClient, PutItemCommandInput } from '@aws-sdk/client-dynamodb'
 import * as dotenv from 'dotenv'

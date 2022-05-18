@@ -1,9 +1,5 @@
 import { AuthAdapter } from './authAdapter'
-import {
-  APIGatewayTokenAuthorizerEvent,
-  AuthResponse,
-  Context,
-} from 'aws-lambda'
+import { APIGatewayTokenAuthorizerEvent, AuthResponse, Context } from 'aws-lambda'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -12,10 +8,7 @@ const Region = process.env.Region || ''
 
 let cachedKey: string
 
-export const handler = async (
-  event: APIGatewayTokenAuthorizerEvent,
-  context: Context,
-) => {
+export const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context) => {
   cachedKey = event.authorizationToken
   if (Region === '') throw new Error('region not supplied')
   if (UserPoolId === '') throw new Error(' UserpoolId not supplied')
