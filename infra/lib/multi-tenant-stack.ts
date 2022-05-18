@@ -106,7 +106,7 @@ export class multitenantStack extends cdk.Stack {
       pointInTimeRecovery: true,
     })
 
-    //  Read from dynamodb
+    //  Lambdas
     const deleteItemLambda = new nodejs.NodejsFunction(this, 'deleteItem', {
       environment: {
         userPoolId: userPool.userPoolId,
@@ -121,7 +121,6 @@ export class multitenantStack extends cdk.Stack {
       entry: path.join(__dirname, '/../../src/lambdas/delete.ts'),
     })
 
-    // Write dynamoDB table
     const putItemLambda = new nodejs.NodejsFunction(this, 'putItem', {
       environment: {
         userPoolId: userPool.userPoolId,
@@ -136,7 +135,34 @@ export class multitenantStack extends cdk.Stack {
       entry: path.join(__dirname, '/../../src/lambdas/put.ts'),
     })
 
-    // Authorization Lambda
+    const queryItemsLambda = new nodejs.NodejsFunction(this, 'queryItems', {
+      environment: {
+        userPoolId: userPool.userPoolId,
+        cognitoAppClient: userPoolClient.userPoolClientId,
+        region: this.region,
+        purchaseHistoryTable: cartTable.tableArn,
+      },
+      memorySize: 1024,
+      tracing: lambda.Tracing.ACTIVE,
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'handler',
+      entry: path.join(__dirname, '/../../src/lambdas/query.ts'),
+    })
+
+    const updateItemLambda = new nodejs.NodejsFunction(this, 'updateItem', {
+      environment: {
+        userPoolId: userPool.userPoolId,
+        cognitoAppClient: userPoolClient.userPoolClientId,
+        region: this.region,
+        purchaseHistoryTable: cartTable.tableArn,
+      },
+      memorySize: 1024,
+      tracing: lambda.Tracing.ACTIVE,
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'handler',
+      entry: path.join(__dirname, '/../../src/lambdas/update.ts'),
+    })
+
     const authLambda = new nodejs.NodejsFunction(this, 'authLambda', {
       environment: {
         userPoolId: userPool.userPoolId,
@@ -177,36 +203,43 @@ export class multitenantStack extends cdk.Stack {
       authorizerUri: `arn:aws:apigateway:${this.region}:lambda:path/2015-03-31/functions/${authLambda.functionArn}/invocations`,
     })
 
-    // add a /purchaseHistory resource
-    const invoices = api.root.addResource('purchaseHistory')
+    // add a /cart resource
+    const cart = api.root.addResource('cart')
 
-    // integrate POST /purchaseHistory with  writeTable Lambda
-    const invoicingLambdaPostIntegration = new apigateway.LambdaIntegration(putItemLambda, { proxy: true })
-
-    invoices.addMethod('POST', invoicingLambdaPostIntegration, {
-      authorizationType: AuthorizationType.CUSTOM,
-      authorizer: { authorizerId: auth.attrAuthorizerId },
-    })
-
-    // integrate GET /purchaseHistory with  readTable Lambda
+    //lambda integrations
+    const putItemLambdaIntegration = new apigateway.LambdaIntegration(putItemLambda, { proxy: true })
     const deleteItemLambdaIntegration = new apigateway.LambdaIntegration(deleteItemLambda, { proxy: true })
-    invoices.addMethod('DELETE', deleteItemLambdaIntegration, {
+    const updateItemLambdaIntegration = new apigateway.LambdaIntegration(updateItemLambda, { proxy: true })
+    const queryItemsLambdaIntegration = new apigateway.LambdaIntegration(queryItemsLambda, { proxy: true })
+
+    cart.addMethod('POST', putItemLambdaIntegration, {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
-
-    //grant permissions for dynamodb access
+    cart.addMethod('POST', deleteItemLambdaIntegration, {
+      authorizationType: AuthorizationType.CUSTOM,
+      authorizer: { authorizerId: auth.attrAuthorizerId },
+    })
+    cart.addMethod('POST', updateItemLambdaIntegration, {
+      authorizationType: AuthorizationType.CUSTOM,
+      authorizer: { authorizerId: auth.attrAuthorizerId },
+    })
+    cart.addMethod('GET', queryItemsLambdaIntegration, {
+      authorizationType: AuthorizationType.CUSTOM,
+      authorizer: { authorizerId: auth.attrAuthorizerId },
+    })
+    //grant dynamoDb permissions
     cartTable.grant(deleteItemLambda, ...['dynamodb:DeleteItem'])
     cartTable.grant(putItemLambda, ...['dynamodb:PutItem'])
 
-    // 👇 create an Output for the API URL
+    //  create an Output for the API URL
     new cdk.CfnOutput(this, 'apiUrl', { value: api.url })
 
-    //  👇 output an arn for execute-api
+    //   output an arn for execute-api
     new cdk.CfnOutput(this, 'execute api arn', {
       value: api.arnForExecuteApi(),
     })
-    // 👇 Outputs
+    //  Outputs
     new cdk.CfnOutput(this, 'userPoolId', {
       value: userPool.userPoolId,
     })
