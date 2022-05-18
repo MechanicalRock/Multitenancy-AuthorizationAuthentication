@@ -216,11 +216,11 @@ export class multitenantStack extends cdk.Stack {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
-    cart.addMethod('POST', deleteItemLambdaIntegration, {
+    cart.addMethod('DELETE', deleteItemLambdaIntegration, {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
-    cart.addMethod('POST', updateItemLambdaIntegration, {
+    cart.addMethod('PATCH', updateItemLambdaIntegration, {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
@@ -231,7 +231,8 @@ export class multitenantStack extends cdk.Stack {
     //grant dynamoDb permissions
     cartTable.grant(deleteItemLambda, ...['dynamodb:DeleteItem'])
     cartTable.grant(putItemLambda, ...['dynamodb:PutItem'])
-
+    cartTable.grant(queryItemsLambda, ...['dynamodb:Query'])
+    cartTable.grant(updateItemLambda, ...['dynamodb:UpdateItem'])
     //  create an Output for the API URL
     new cdk.CfnOutput(this, 'apiUrl', { value: api.url })
 
