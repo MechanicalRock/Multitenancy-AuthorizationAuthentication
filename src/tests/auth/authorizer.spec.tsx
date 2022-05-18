@@ -6,7 +6,7 @@ import {
 import { handler as authHandler } from '../../auth/lambdaAuthorizer'
 import * as dotenv from 'dotenv'
 import { APIGatewayTokenAuthorizerEvent, AuthResponse } from 'aws-lambda'
-
+dotenv.config()
 let validTokenVerification: AuthResponse
 let invalidTokenVerification: AuthResponse
 let context: IContext
@@ -46,7 +46,6 @@ var validToken: string | undefined
 var invalidToken = 'aaa.b'
 describe('(logic) Given a  valid lambda authorizer  event', () => {
   beforeAll(async () => {
-    dotenv.config()
     const initiateCommandInput: InitiateAuthCommandInput = {
       AuthFlow: 'USER_PASSWORD_AUTH',
       ClientId: process.env.COGNITO_CLIENT_ID as string,

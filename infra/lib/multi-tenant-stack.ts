@@ -10,7 +10,7 @@ import { PolicyDocument, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway'
 
 export class multitenantStack extends cdk.Stack {
-  REGION = 'ap-southeast-2'
+  region = 'ap-southeast-2'
   constructor(scope: cdk.App, env: string, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
@@ -108,8 +108,8 @@ export class multitenantStack extends cdk.Stack {
     const purchaseHistoryTable = new dynamodb.Table(this, 'purchaseHistory', {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      partitionKey: { name: 'userid', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'createdAt', type: dynamodb.AttributeType.NUMBER },
+      partitionKey: { name: 'tenantId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'itemId', type: dynamodb.AttributeType.NUMBER },
       pointInTimeRecovery: true,
     })
 
@@ -184,7 +184,7 @@ export class multitenantStack extends cdk.Stack {
         restApiId: api.restApiId,
         type: 'TOKEN',
         authorizerCredentials: authorizerRole.roleArn, //todo
-        authorizerUri: `arn:aws:apigateway:${this.REGION}:lambda:path/2015-03-31/functions/${authLambda.functionArn}/invocations`,
+        authorizerUri: `arn:aws:apigateway:${this.region}:lambda:path/2015-03-31/functions/${authLambda.functionArn}/invocations`,
       },
     )
 
