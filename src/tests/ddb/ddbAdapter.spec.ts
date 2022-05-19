@@ -9,7 +9,7 @@ const key = process.env.AWS_ACCESS_KEY_ID || ''
 const id = Date.now()
 dotenv.config()
 const existingId = 1652757718196
-let tableName = 'Demo-purchaseHistory3721EB7F-TGWTLT50BXH4'
+let tableName = process.env.cartTable?.split('/')[1] as string
 let item1 = {
   productId: 'bta-2094',
   description: 'Battle Axe',
@@ -53,7 +53,8 @@ describe('(logic) Table', () => {
     })
     let ddbDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient)
     dynamoDBAdapter = new DynamoDbAdapter(ddbDocumentClient, tableName)
-    dynamoDBAdapter.put(jediCart)
+    const res = await dynamoDBAdapter.put(jediCart)
+    if (!res.success) throw new Error(res.response as string)
   })
   it('Given tenantId# should only return items belonging to tenant', async () => {
     let queryCart: TQuery = {
