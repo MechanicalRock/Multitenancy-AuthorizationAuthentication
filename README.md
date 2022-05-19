@@ -55,7 +55,7 @@
   --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
      Name="custom:org",Value="galactic empire" \
      Name="given_name", Value="Anakin" \
-     Name="custom:group",Value="user" \
+     Name="custom:group",Value="admin" \
      Name="family_name",Value="Skywalker"
 
 ```
