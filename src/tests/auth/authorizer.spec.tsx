@@ -1,8 +1,5 @@
 import { Auth } from './auth.lambda'
-import {
-  InitiateAuthCommandInput,
-  CognitoIdentityProviderClient,
-} from '@aws-sdk/client-cognito-identity-provider'
+import { InitiateAuthCommandInput, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider'
 import { handler as authHandler } from '../../auth/lambdaAuthorizer'
 import * as dotenv from 'dotenv'
 import { APIGatewayTokenAuthorizerEvent, AuthResponse } from 'aws-lambda'
@@ -70,10 +67,7 @@ describe('(logic) Given a  valid lambda authorizer  event', () => {
         methodArn: '',
         authorizationToken: validToken as string,
       }
-      validTokenVerification = await authHandler(
-        validAuthEvent,
-        lambdaContextObject,
-      )
+      validTokenVerification = await authHandler(validAuthEvent, lambdaContextObject)
       context = validTokenVerification.context as unknown as IContext
     } catch (error) {
       throw new Error(error as string)
@@ -85,23 +79,16 @@ describe('(logic) Given a  valid lambda authorizer  event', () => {
         methodArn: '',
         authorizationToken: invalidToken,
       }
-      invalidTokenVerification = await authHandler(
-        invalidAuthEvent,
-        lambdaContextObject,
-      )
+      invalidTokenVerification = await authHandler(invalidAuthEvent, lambdaContextObject)
     } catch (error) {
       throw new Error(error as string)
     }
   })
 
   it('should return an allow policy if token conforms to verification checks', () => {
-    expect(validTokenVerification.policyDocument.Statement[0].Effect).toBe(
-      'Allow',
-    )
+    expect(validTokenVerification.policyDocument.Statement[0].Effect).toBe('Allow')
   })
   it('should return a deny policy if token is malformed', () => {
-    expect(invalidTokenVerification.policyDocument.Statement[0].Effect).toBe(
-      'Deny',
-    )
+    expect(invalidTokenVerification.policyDocument.Statement[0].Effect).toBe('Deny')
   })
 })
