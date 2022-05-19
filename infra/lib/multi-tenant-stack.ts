@@ -97,8 +97,8 @@ export class multitenantStack extends cdk.Stack {
       supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.COGNITO],
     })
 
-    //purchaseHistory table
-    const cartTable = new dynamodb.Table(this, 'purchaseHistory', {
+    //cart table
+    const cartTable = new dynamodb.Table(this, 'cart', {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       partitionKey: { name: 'tenantId', type: dynamodb.AttributeType.STRING },
@@ -112,7 +112,7 @@ export class multitenantStack extends cdk.Stack {
         userPoolId: userPool.userPoolId,
         cognitoAppClient: userPoolClient.userPoolClientId,
         region: this.region,
-        purchaseHistoryTable: cartTable.tableArn,
+        cartTable: cartTable.tableArn,
       },
       memorySize: 1024,
       tracing: lambda.Tracing.ACTIVE,
@@ -126,7 +126,7 @@ export class multitenantStack extends cdk.Stack {
         userPoolId: userPool.userPoolId,
         cognitoAppClient: userPoolClient.userPoolClientId,
         region: this.region,
-        purchaseHistoryTable: cartTable.tableArn,
+        cartTable: cartTable.tableArn,
       },
       memorySize: 1024,
       tracing: lambda.Tracing.ACTIVE,
@@ -140,7 +140,7 @@ export class multitenantStack extends cdk.Stack {
         userPoolId: userPool.userPoolId,
         cognitoAppClient: userPoolClient.userPoolClientId,
         region: this.region,
-        purchaseHistoryTable: cartTable.tableArn,
+        cartTable: cartTable.tableArn,
       },
       memorySize: 1024,
       tracing: lambda.Tracing.ACTIVE,
@@ -154,7 +154,7 @@ export class multitenantStack extends cdk.Stack {
         userPoolId: userPool.userPoolId,
         cognitoAppClient: userPoolClient.userPoolClientId,
         region: this.region,
-        purchaseHistoryTable: cartTable.tableArn,
+        cartTable: cartTable.tableArn,
       },
       memorySize: 1024,
       tracing: lambda.Tracing.ACTIVE,
@@ -168,7 +168,8 @@ export class multitenantStack extends cdk.Stack {
         userPoolId: userPool.userPoolId,
         cognitoAppClient: userPoolClient.userPoolClientId,
         region: this.region,
-        purchaseHistoryTable: cartTable.tableArn,
+        cartTable: cartTable.tableArn,
+        executeApiArn: api.arnForExecuteApi(),
       },
       memorySize: 1024,
       tracing: lambda.Tracing.ACTIVE,
@@ -234,6 +235,7 @@ export class multitenantStack extends cdk.Stack {
     cartTable.grant(queryItemsLambda, ...['dynamodb:Query'])
     cartTable.grant(updateItemLambda, ...['dynamodb:UpdateItem'])
     //  create an Output for the API URL
+    new cdk.CfnOutput(this, 'Table Arn', { value: cartTable.tableArn })
     new cdk.CfnOutput(this, 'apiUrl', { value: api.url })
 
     //   output an arn for execute-api

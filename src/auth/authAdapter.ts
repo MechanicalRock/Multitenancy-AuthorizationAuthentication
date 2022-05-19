@@ -9,23 +9,34 @@ export class AuthAdapter implements IAuth {
   private PublicKeysUrl: string
   private CognitoIssuer: string
   private executeApiArn: string
+  private cartTable: string
   private cacheKeys: IMapOfKidToPublicKey | undefined
-  constructor(region: string, userPoolId: string, accountId: string) {
+  constructor(region: string, userPoolId: string, accountId: string, cartTable: string, executeApiArn: string) {
     this.PublicKeysUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`
     this.CognitoIssuer = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`
-    this.executeApiArn = `arn:aws:execute-api:${region}:${accountId}:*/*/*/purchaseHistory`
+    this.executeApiArn = executeApiArn
+    this.cartTable = cartTable
   }
 
-  allowPolicy(): PolicyDocument {
+  allowPolicy(tenantId: string): PolicyDocument {
     const policyDocument: PolicyDocument = {
       Version: '2012-10-17',
 
       Statement: [
         {
           Action: 'execute-api:Invoke',
-
           Effect: 'Allow',
           Resource: this.executeApiArn,
+        },
+        {
+          Action: ['dynamodb:UpdateItem', 'dynamodb:PutItem', 'dynamodb:DeleteItem', 'dynamodb:Query'],
+          Effect: 'Allow',
+          Resource: this.cartTable,
+          Condition: {
+            'ForAllValues:StringLike': {
+              'dynamodb:LeadingKeys': tenantId,
+            },
+          },
         },
       ],
     }
@@ -37,7 +48,7 @@ export class AuthAdapter implements IAuth {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: 'execute-api:Invoke',
+          Action: '*',
           Effect: 'Deny',
           Resource: this.executeApiArn,
         },

@@ -4,21 +4,22 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 const UserPoolId = process.env.userPoolId || ''
-const Region = process.env.Region || ''
-
+const region = process.env.region || ''
+const executeApiArn = process.env.executeApiArn || ''
+const cartTable = process.env.cartTable || ''
 let cachedKey: string
 
 export const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context) => {
   cachedKey = event.authorizationToken
-  if (Region === '') throw new Error('region not supplied')
+  if (region === '') throw new Error('region not supplied')
   if (UserPoolId === '') throw new Error(' UserpoolId not supplied')
   const accountId = context.invokedFunctionArn.split(':')[4]
-  const authAdapter = new AuthAdapter(Region, UserPoolId, accountId)
+  const authAdapter = new AuthAdapter(region, UserPoolId, accountId, cartTable, executeApiArn)
   const verificationResult = await authAdapter.verifyToken(cachedKey)
   if (verificationResult.isValid) {
     const authResponse: AuthResponse = {
       principalId: verificationResult.principalId as string,
-      policyDocument: authAdapter.allowPolicy(),
+      policyDocument: authAdapter.allowPolicy(verificationResult.tenantId as string),
       context: {
         org: verificationResult.org,
         tenantId: verificationResult.tenantId,
