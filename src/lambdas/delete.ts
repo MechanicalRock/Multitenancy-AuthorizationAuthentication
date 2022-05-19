@@ -5,7 +5,7 @@ import { DynamoDbAdapter } from '../db/ddbAdapter'
 import { IContext } from '../ports/authPort'
 import { isContext } from 'vm'
 AWS.config.update({ region: 'ap-south-east-2' })
-const region = process.env.REGION || ''
+const region = process.env.region || ''
 const tableName = process.env.TABLE_NAME || ''
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {

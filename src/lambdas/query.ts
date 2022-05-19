@@ -6,7 +6,7 @@ import { IContext } from '../ports/authPort'
 import { isContext } from 'vm'
 import { TQuery } from '../ports/ddbPort'
 AWS.config.update({ region: 'ap-south-east-2' })
-const region = process.env.REGION || ''
+const region = process.env.region || ''
 const tableName = process.env.TABLE_NAME || ''
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {

@@ -6,7 +6,7 @@ import { IContext } from '../ports/authPort'
 import { isContext } from 'vm'
 import { TCartUpdate, TQuery } from '../ports/ddbPort'
 AWS.config.update({ region: 'ap-south-east-2' })
-const region = process.env.REGION || ''
+const region = process.env.region || ''
 const tableName = process.env.TABLE_NAME || ''
 interface updateReq {
   increment: number
