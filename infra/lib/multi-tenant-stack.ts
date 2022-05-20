@@ -22,7 +22,7 @@ export class multitenantStack extends cdk.Stack {
         dataTraceEnabled: true,
         tracingEnabled: true,
       },
-
+      defaultMethodOptions: {},
       // enable CORS
       defaultCorsPreflightOptions: {
         allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key'],
@@ -187,7 +187,7 @@ export class multitenantStack extends cdk.Stack {
             {
               Effect: 'Allow',
               Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
-              Resource: `arn:aws:lambda:${scope.region}:${scope.account}:function:*`,
+              Resource: authLambda.functionArn,
             },
           ],
         }),
@@ -230,10 +230,10 @@ export class multitenantStack extends cdk.Stack {
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
     //grant dynamoDb permissions
-    cartTable.grant(deleteItemLambda, ...['dynamodb:DeleteItem'])
-    cartTable.grant(putItemLambda, ...['dynamodb:PutItem'])
-    cartTable.grant(queryItemsLambda, ...['dynamodb:Query'])
-    cartTable.grant(updateItemLambda, ...['dynamodb:UpdateItem'])
+    cartTable.grantReadWriteData(deleteItemLambda)
+    cartTable.grantReadWriteData(putItemLambda)
+    cartTable.grantReadData(queryItemsLambda)
+    cartTable.grantReadData(updateItemLambda)
     //  create an Output for the API URL
     new cdk.CfnOutput(this, 'Table Arn', { value: cartTable.tableArn })
     new cdk.CfnOutput(this, 'apiUrl', { value: api.url })
