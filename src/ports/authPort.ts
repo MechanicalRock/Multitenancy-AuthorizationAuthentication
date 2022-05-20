@@ -48,7 +48,7 @@ export interface IJwtVerificationResult {
   readonly userName?: string
   readonly org?: string
   readonly tenantId?: string
-  readonly isValid: boolean
+  readonly tokenIsValid: boolean
   readonly name?: Iname
   readonly principalId?: string
   readonly error?: any
@@ -65,7 +65,9 @@ export interface IContext {
   tenantId: string
   firstName: string
   lastName: string
-  token_use: string
+  token_use?: string
+  principalId?: string
+  integrationLatency?: string
 }
 
 export interface IAuth {
