@@ -49,38 +49,35 @@
 ###### admin user
 
 ```
-  aws cognito-idp admin-update-user-attributes \
-  --user-pool-id YOUR_USER_POOL_ID \
-  --username <enter_email_here> \
-  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
-     Name="custom:org",Value="galactic empire" \
-     Name="given_name", Value="Anakin" \
-     Name="custom:group",Value="admin" \
-     Name="family_name",Value="Skywalker"
+      aws cognito-idp admin-create-user \
+      --user-pool-id [user pool id here] \
+      --username [email here] \
+      --user-attributes Name="custom:tenantId",Value="sith-inc-100"  Name="custom:org",Value="galactic empire" Name="given_name",Value="Anakin"  Name="family_name",Value="Skywalker"
 
+      aws cognito-idp  admin-confirm-sign-up \
+      --user-pool-id [user pool id here] \
+      --username [email here] \
+
+
+      aws cognito-idp admin-set-user-password \
+      --user-pool-id [user pool id here] \
+      --username [email here] \
+      --password [password here] \
+      --permanent
 ```
 
-###### regular user
+###### Add the following environment variables via cli (avoid using .env files)
 
-```
-  aws cognito-idp admin-update-user-attributes \
-  --user-pool-id YOUR_USER_POOL_ID \
-  --username <enter_2nd_email_here> \
-  --user-attributes Name="custom:tenantId",Value="GA-3fvj" \
-     Name="custom:org",Value="galactic empire" \
-     Name="given_name", Value="Sheev" \
-     Name="custom:group",Value="user" \
-     Name="family_name",Value="Sidious"
-
-```
-
-###### Add .env to your project's root
-
-    Region="xxxxxx"
-    userPoolId="xxxxxxx"
-    COGNITO_USER_NAME='xxxxxxx'
-    COGNITO_USER_PASSWORD='xxxxxxxx'
-    COGNITO_CLIENT_ID='xxxxxxxxx'
+    export  region="xxxxx"
+    export  userPoolId="xxxxxxx"
+    export  COGNITO_USER_NAME='xxxxxxx'
+    export  COGNITO_USER_PASSWORD='xxxxxxx'
+    export  COGNITO_CLIENT_ID='xxxxxx'
+    export  cartTable='xxxxxxx'
+    export  executeApiArn="xxxxxxxx"
+    export  AWS_ACCESS_KEY_ID="xxxxxxx"
+    export  AWS_SECRET_ACCESS_KEY="xxxxx"
+    export  AWS_SESSION_TOKEN="xxxxx"
 
 ## Background Knowledge
 
@@ -300,12 +297,13 @@ The table provided below is a representation of how the data stored in the purch
 | `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
 | `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
 
-### Allow/Deny API Gateway Traffic
+### Fine Grained Access Control
 
-When the application's Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API depending on the following.
+When the Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API and dynamoDB table depending on the outcome of the Lambda Authorizer's token claims verification.
 
-1. The outcome of the Lambda Authorizer's token claims verification
-2. The type of user (admin/user)
+All Allow-Policies generated will allow the authenticated user to only access data that has a partition key which matches their tenant id. This is achieved by making use of DynamoDB's `dynamodb:LeadingKeys` condition key for fine grained access control.
+In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within dynamodb tables. Employing the use of this mechanism guarentees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
+![image](finegrainedAccessforDdb.png)
 
 #### Lambda Authorizer Resource Policies
 
@@ -317,8 +315,8 @@ When the application's Lambda Authorizer is invoked it is expected to return a J
     "Statement": [
         {
             "Effect": "Deny",
-            "Action": "execute-api:Invoke",
-            "Resource": "arn:aws:execute-api:${region}:${accountId}:*/*/*/purchaseHistory"
+            "Action": "*",
+            "Resource": "*"
         },
     ]
 }
@@ -333,23 +331,18 @@ When the application's Lambda Authorizer is invoked it is expected to return a J
         {
             "Effect": "Allow",
             "Action": "execute-api:Invoke",
-            "Resource": "arn:aws:execute-api:${region}:${accountId}:*/*/*/purchaseHistory"
+            "Resource": executeApiArn,
         },
-    ]
-}
-```
-
-###### Token Verification passed - User
-
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
         {
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "execute-api:Invoke",
-            "Resource": "arn:aws:execute-api:${region}:${accountId}:*/*/GET/purchaseHistory"
+
+          Effect: 'Allow',
+          Action: ['dynamodb:UpdateItem', 'dynamodb:PutItem', 'dynamodb:DeleteItem', 'dynamodb:Query'],
+          Resource: this.cartTable,
+          Condition: {
+            'ForAllValues:StringLike': {
+              'dynamodb:LeadingKeys': tenantId,
+            },
+          },
         },
     ]
 }
