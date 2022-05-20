@@ -263,6 +263,7 @@ The JWK will need to be `converted to PEM format` before that can happen.
 ## Scenario: Multi-tenant purchase tracking microservice
 
 Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer shopping carts. The persistence layer will consist of 4 lambdas that perform `DELETE`, `PUT`, `QUERY` and `UPDATE` actions. An architectural diagram for this scenario has been provided below.
+
 ![image](architecture.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
