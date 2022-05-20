@@ -39,8 +39,8 @@ const Password = process.env.COGNITO_USER_PASSWORD || ''
 let validAuthEvent: APIGatewayTokenAuthorizerEvent
 let invalidAuthEvent: APIGatewayTokenAuthorizerEvent
 
-var validToken: string | undefined
-var invalidToken = 'aaa.b'
+var validToken: string
+var invalidToken = 'Bearer aaa.b'
 describe('(logic) Given a  valid lambda authorizer  event', () => {
   beforeAll(async () => {
     const initiateCommandInput: InitiateAuthCommandInput = {
@@ -61,13 +61,14 @@ describe('(logic) Given a  valid lambda authorizer  event', () => {
     })
 
     try {
-      validToken = await Auth(initiateCommandInput, client)
+      validToken = (await Auth(initiateCommandInput, client)) as string | ''
       validAuthEvent = {
         type: 'TOKEN',
         methodArn: '',
-        authorizationToken: validToken as string,
+        authorizationToken: `Bearer ${validToken}`,
       }
       validTokenVerification = await authHandler(validAuthEvent, lambdaContextObject)
+
       context = validTokenVerification.context as unknown as IContext
     } catch (error) {
       throw new Error(error as string)
