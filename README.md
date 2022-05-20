@@ -262,8 +262,8 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 ## Scenario: Multi-tenant purchase tracking microservice
 
-Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer purchases. This microservice can potentially be split into two read/write lambdas. An architectural diagram for this scenario has been provided below.
-![image](architecture.png)
+Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer shopping carts. The persistence layer will consist of 4 lambdas that perform `DELETE`, `PUT`, `QUERY` and `UPDATE` actions. An architectural diagram for this scenario has been provided below.
+![image](architecturev2.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
 2. If the supplied credentials (username and password) are valid, cognito creates a session and subsequently issues three (3) JWTs (JSON Web Tokens). The aforementioned tokens are id token, access token and a refresh token. The authenticated user can now send requests to api gateway along with with the id token in the headers section.
@@ -280,26 +280,69 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 To create a secure `multi-tenant` environment there needs to be some notion of `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem it was decided that it is necessary to assign a unique identifier called `tenantID` to each user/customer. The aforementioned `tenantID` is a composite string that is generated and then attached to the calling user as a `custom attribute` during the registration stage.
 
-After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so,the application will exclusively use id tokens for authorization.
+After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so,the application will exclusively use id tokens for authorization/authentication purposes.
 
 #### Lambda Context Objects
 
-In order to make use of the idea of a `tenantID` it is important to realise that there needs to be some way of retrieving the correct `tenantID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play. When the Lambda service invokes a function, it passes a context object to the function handler.
+In order to make use of the idea of a `tenantID` it is important to realise that there needs to be some way of retrieving the correct `tenantID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play.
 
 Context objects can be modified to include custom parameters that can then be accessed during run time. With this in mind, it should be relatively straight forward to use the application's Lambda Authorizer to forward the retrieved `tenantID` as a custom parameter within the JSON output of the lambda authorizer.
+
+When downstream lambdas are invoked they cam access the context object as a key within the event object. Take for example the following sample lambda event object.
+
+```
+2022-05-20T08:09:58.116Z	1c1c55e3-6ec1-47fb-962f-d94387e10480	INFO	{
+  resourceId: 'hdo0nl',
+  authorizer: {
+    firstName: 'Anakin',
+    lastName: 'Skywalker',
+    org: 'galactic empire',
+    tenantId: 'sith-inc-100',
+    principalId: '24da3e19-0417-4e85-a9ed-078b9dcfb919',
+    integrationLatency: 0
+  },
+  resourcePath: '/cart/{itemId}',
+  httpMethod: 'PATCH',
+  extendedRequestId: 'SajxWGotSwMFoIw=',
+  requestTime: '20/May/2022:08:09:57 +0000',
+  path: '/multiTenantStack/cart/1653034194717',
+  accountId: '935741529896',
+  protocol: 'HTTP/1.1',
+  stage: 'multiTenantStack',
+  domainPrefix: 'htieqffa0l',
+  requestTimeEpoch: 1653034197210,
+  requestId: 'f260bfad-f7f3-4641-b492-6bbbff99de74',
+  identity: {
+    cognitoIdentityPoolId: null,
+    accountId: null,
+    cognitoIdentityId: null,
+    caller: null,
+    sourceIp: '180.150.83.218',
+    principalOrgId: null,
+    accessKey: null,
+    cognitoAuthenticationType: null,
+    cognitoAuthenticationProvider: null,
+    userArn: null,
+    userAgent: 'axios/0.21.4',
+    user: null
+  },
+  domainName: 'htieqffa0l.execute-api.ap-southeast-2.amazonaws.com',
+  apiId: 'htieqffa0l'
+}
+```
 
 #### Multi-tenant DynamoDB table
 
 In the context of dynamoDb, the tenant ID will essentially be the partition key that'll be used to group together/ partition customer data. When a customer needs to write/retrieve data to/from the purchase history database they'll use their unique tenant ID to only access data that belongs to them. In essence the tenant ID can be thought of as being analogous to a key that can only open a single door.
 
-The table provided below is a representation of how the data stored in the purchase history will be partitioned. The parameter `tenantId` is used as the `partition key` while the `dateTimePurchased` parameter is used as the `sort key`.
+The table provided below is a representation of how the data stored in the purchase history will be partitioned. The parameter `tenantId` is used as the `partition key` while the `itemId` parameter is used as the `sort key`.
 
-|     tenantID     | dateTimePurchased | products |
-| :--------------: | :---------------: | :------: |
-| `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
-| `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
-| `Customer1-xcv9` | `dd-mm-yyTh:m:sZ` |    []    |
-| `Customer2-dgf1` | `dd-mm-yyTh:m:sZ` |    []    |
+|     tenantID     | itemID      |  price   | qty | description |
+| :--------------: | :---------- | :------: | :-: | :---------: |
+| `Customer1-xcv9` | `timestamp` | `number` |     |  `string`   |
+| `Customer2-dgf1` | `timestamp` | `number` |     |  `string`   |
+| `Customer1-xcv9` | `timestamp` | `number` |     |  `string`   |
+| `Customer2-dgf1` | `timestamp` | `number` |     |  `string`   |
 
 ### Fine Grained Access Control
 
