@@ -206,7 +206,7 @@ export class multitenantStack extends cdk.Stack {
 
     // add a /cart resource
     const cart = api.root.addResource('cart')
-
+    const cartItem = cart.addResource('{itemId}')
     //lambda integrations
     const putItemLambdaIntegration = new apigateway.LambdaIntegration(putItemLambda, { proxy: true })
     const deleteItemLambdaIntegration = new apigateway.LambdaIntegration(deleteItemLambda, { proxy: true })
@@ -217,11 +217,11 @@ export class multitenantStack extends cdk.Stack {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
-    cart.addMethod('DELETE', deleteItemLambdaIntegration, {
+    cartItem.addMethod('DELETE', deleteItemLambdaIntegration, {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })
-    cart.addMethod('PATCH', updateItemLambdaIntegration, {
+    cartItem.addMethod('PATCH', updateItemLambdaIntegration, {
       authorizationType: AuthorizationType.CUSTOM,
       authorizer: { authorizerId: auth.attrAuthorizerId },
     })

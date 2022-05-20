@@ -18,7 +18,7 @@ import {
 
 export interface IDbSchema extends IProduct {
   tenantId: string
-  itemId: number | (() => number)
+  itemId: number
 }
 export interface IProduct {
   productId?: string

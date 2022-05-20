@@ -4,18 +4,21 @@ import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 import { DynamoDbAdapter } from '../db/ddbAdapter'
 import { IContext } from '../ports/authPort'
 import { isContext } from 'vm'
+import { eventNames } from 'process'
 AWS.config.update({ region: 'ap-south-east-2' })
 const region = process.env.region || ''
-const tableName = process.env.TABLE_NAME || ''
-
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+let tableArn = process.env.cartTable || ''
+const tableName = tableArn.split('/')[1]
+type ItemId = { itemId: string }
+export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   const dynamoDBClient = new DynamoDBClient({
     region: region,
   })
-  let ctx: IContext = context.clientContext?.Custom as IContext
+  const param = event.pathParameters as ItemId
+  let ctx: IContext = event.requestContext.authorizer as IContext
   const sk: number = parseInt(event.body as string)
   const dynamoDBAdapter = new DynamoDbAdapter(dynamoDBClient, tableName)
-  const res = await dynamoDBAdapter.delete(ctx.tenantId, sk)
+  const res = await dynamoDBAdapter.delete(ctx.tenantId, parseInt(param.itemId))
   if (!res.success) throw new Error(res.response as string)
   return {
     statusCode: 200,

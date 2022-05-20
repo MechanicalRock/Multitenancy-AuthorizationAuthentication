@@ -80,7 +80,20 @@ describe('(logic) Api calls', () => {
     console.log(records)
     expect(handlerRes.success).toBe(true)
   })
+  it('should process a DELETE request to remove an item from the database', async () => {
+    const apigwRes = await axios.default.delete<APIGatewayProxyResultV2>(`${apiUrl}/${mockData[0].itemId}`, {
+      headers: {
+        Authorization: `Bearer ${validToken}`,
+      },
+    })
+    console.log(apigwRes.data)
+    // const handlerRes = apigwRes.data as IDdbClientResponse
 
+    // const queryOutput = handlerRes.response as QueryCommandOutput
+    // const records = queryOutput.Items as IDbSchema[]
+    // console.log(records)
+    // expect(handlerRes.success).toBe(true)
+  })
   it.todo('should process a PATCH request to update an item in the cart database')
   it.todo('should process a GET request to Query an item in the cart database')
 })
