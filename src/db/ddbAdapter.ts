@@ -19,8 +19,7 @@ import {
   DeleteCommandInput,
   DeleteCommand,
 } from '@aws-sdk/lib-dynamodb'
-import { SmithyResolvedConfiguration } from '@aws-sdk/smithy-client'
-import { Client as IClient, Command, MetadataBearer, MiddlewareStack, RequestHandler } from '@aws-sdk/types'
+
 export class DynamoDbAdapter implements IDdb {
   private ddbClient: DynamoDBDocumentClient
   private tableName: string
