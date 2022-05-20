@@ -7,14 +7,15 @@ import { isContext } from 'vm'
 import { TQuery } from '../ports/ddbPort'
 AWS.config.update({ region: 'ap-south-east-2' })
 const region = process.env.region || ''
-const tableName = process.env.TABLE_NAME || ''
+let tableArn = process.env.cartTable || ''
+const tableName = tableArn.split('/')[1]
 
-export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const dynamoDBClient = new DynamoDBClient({
     region: region,
   })
 
-  let ctx: IContext = context.clientContext?.Custom as IContext
+  let ctx: IContext = event.requestContext.authorizer as IContext
   let queryCart: TQuery = {
     KeyConditionExpression: '#partitionKey = :partitionKey',
     ScanIndexForward: true,
