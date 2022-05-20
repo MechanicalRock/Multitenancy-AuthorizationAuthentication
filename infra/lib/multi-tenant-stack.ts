@@ -233,7 +233,7 @@ export class multitenantStack extends cdk.Stack {
     cartTable.grantReadWriteData(deleteItemLambda)
     cartTable.grantReadWriteData(putItemLambda)
     cartTable.grantReadData(queryItemsLambda)
-    cartTable.grantReadData(updateItemLambda)
+    cartTable.grantReadWriteData(updateItemLambda)
     //  create an Output for the API URL
     new cdk.CfnOutput(this, 'Table Arn', { value: cartTable.tableArn })
     new cdk.CfnOutput(this, 'apiUrl', { value: api.url })
