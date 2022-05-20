@@ -23,6 +23,10 @@
       - [Tenant ID](#tenant-id)
       - [Lambda Context Objects](#lambda-context-objects)
       - [Multi-tenant DynamoDB table](#multi-tenant-dynamodb-table)
+        - [Fine Grained Access Control](#Fine-Grained-Access-Control)
+          - [Lambda Authorizer Resource Policies](#Lambda-Authorizer-Resource-Policies)
+            - [Token Verification failed](#Token-Verification-failed)
+            - [Token Verification passed](#Token-Verification-passed)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -302,7 +306,7 @@ The table provided below is a representation of how the data stored in the purch
 When the Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API and dynamoDB table depending on the outcome of the Lambda Authorizer's token claims verification.
 
 All Allow-Policies generated will allow the authenticated user to only access data that has a partition key which matches their tenant id. This is achieved by making use of DynamoDB's `dynamodb:LeadingKeys` condition key for fine grained access control.
-In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within dynamodb tables. Employing the use of this mechanism guarentees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
+In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within DynamodDB tables. Employing the use of this mechanism guarentees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
 
 ![image](dynamdbFineGrainedAccess.png)
 
@@ -323,7 +327,7 @@ In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row leve
 }
 ```
 
-###### Token Verification passed - Admin
+###### Token Verification passed
 
 ```
 {
