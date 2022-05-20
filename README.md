@@ -303,7 +303,8 @@ When the Lambda Authorizer is invoked it is expected to return a JSON object tha
 
 All Allow-Policies generated will allow the authenticated user to only access data that has a partition key which matches their tenant id. This is achieved by making use of DynamoDB's `dynamodb:LeadingKeys` condition key for fine grained access control.
 In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within dynamodb tables. Employing the use of this mechanism guarentees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
-![image](finegrainedAccessforDdb.png)
+
+![image](dynamdbFineGrainedAccess.png)
 
 #### Lambda Authorizer Resource Policies
 
