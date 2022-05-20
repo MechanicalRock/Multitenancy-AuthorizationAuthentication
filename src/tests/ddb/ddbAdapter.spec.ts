@@ -33,7 +33,7 @@ let mockData = [
   { tenantId: 'jedi-inc-000', itemId: 123456900 },
 ]
 let sithCart = {
-  tenantId: mockData[0].tenantId,
+  tenantId: mockData[0],
   ...item2,
 }
 let jediCart = {

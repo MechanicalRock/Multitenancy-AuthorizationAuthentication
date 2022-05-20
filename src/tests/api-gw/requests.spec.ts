@@ -2,13 +2,11 @@ import * as axios from 'axios'
 import { InitiateAuthCommandInput, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider'
 import { Auth } from '../auth/auth.lambda'
 import * as dotenv from 'dotenv'
-import { IDdbClientResponse } from '../../ports/ddbPort'
-
+import { IDdbClientResponse, IDbSchema } from '../../ports/ddbPort'
+import { APIGatewayProxyResultV2 } from 'aws-lambda'
+import { QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 const apiUrl = 'https://htieqffa0l.execute-api.ap-southeast-2.amazonaws.com/multiTenantStack/cart'
-type PostResponse = {
-  body: string
-  status: number
-}
+
 dotenv.config()
 
 describe('(logic) Api calls', () => {
@@ -18,11 +16,11 @@ describe('(logic) Api calls', () => {
   const Username = process.env.COGNITO_USER_NAME || ''
   const Password = process.env.COGNITO_USER_PASSWORD || ''
   var validToken: string | undefined
-  var invalidToken = 'aaa.b'
 
+  const timeStamp = Date.now()
   let mockData = [
-    { tenantId: 'sith-inc-100', itemId: 123456789 },
-    { tenantId: 'jedi-inc-000', itemId: 123456900 },
+    { tenantId: 'sith-inc-100', itemId: timeStamp },
+    { tenantId: 'jedi-inc-000', itemId: timeStamp },
   ]
   let item2 = {
     productId: 'lts-2094',
@@ -30,7 +28,7 @@ describe('(logic) Api calls', () => {
     unitPrice: '1000000',
     qty: 1,
   }
-  let sithCart = {
+  let sithCart: IDbSchema = {
     ...mockData[0],
     ...item2,
   }
@@ -58,15 +56,29 @@ describe('(logic) Api calls', () => {
       throw new Error(error as string)
     }
   })
+  it('should process a POST request to add a new item to the database', async () => {
+    const apigwRes = await axios.default.post<APIGatewayProxyResultV2>(apiUrl, sithCart, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${validToken}`,
+      },
+    })
+    const handlerRes = apigwRes.data as IDdbClientResponse
+    expect(handlerRes.success).toBe(true)
+  })
   it('should process a GET request to retrieve item from the database', async () => {
-    const res = await axios.default.get<IDdbClientResponse>(apiUrl, {
-      //   data: JSON.stringify(sithCart),
+    const apigwRes = await axios.default.get<APIGatewayProxyResultV2>(apiUrl, {
       headers: {
         Authorization: `Bearer ${validToken}`,
       },
     })
 
-    console.log(' data:', res.data.response)
+    const handlerRes = apigwRes.data as IDdbClientResponse
+
+    const queryOutput = handlerRes.response as QueryCommandOutput
+    const records = queryOutput.Items as IDbSchema[]
+    console.log(records)
+    expect(handlerRes.success).toBe(true)
   })
 
   it.todo('should process a PATCH request to update an item in the cart database')

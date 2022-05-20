@@ -7,13 +7,13 @@ import { isContext } from 'vm'
 import { IDbSchema } from '../ports/ddbPort'
 AWS.config.update({ region: 'ap-south-east-2' })
 const region = process.env.region || ''
-const tableName = process.env.TABLE_NAME || ''
+let tableArn = process.env.cartTable || ''
+const tableName = tableArn.split('/')[1]
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   const dynamoDBClient = new DynamoDBClient({
     region: region,
   })
-  let ctx: IContext = context.clientContext?.Custom as IContext
   const item: IDbSchema = JSON.parse(event.body as string) as IDbSchema
   const dynamoDBAdapter = new DynamoDbAdapter(dynamoDBClient, tableName)
   const res = await dynamoDBAdapter.put(item)
