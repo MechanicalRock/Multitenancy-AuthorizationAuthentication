@@ -1,3 +1,5 @@
+![image](multi-tenancy.png)
+
 # Contents
 
 - [AWS Authorization and Authentication Tutorial](#aws-authorization-and-authentication-tutorial)
