@@ -264,7 +264,7 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer shopping carts. The persistence layer will consist of 4 lambdas that perform `DELETE`, `PUT`, `QUERY` and `UPDATE` actions. An architectural diagram for this scenario has been provided below.
 
-![image](architecture.png)
+![image](arch.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
 2. If the supplied credentials (username and password) are valid, cognito creates a session and subsequently issues three (3) JWTs (JSON Web Tokens). The aforementioned tokens are id token, access token and a refresh token. The authenticated user can now send requests to api gateway along with with the id token in the headers section.
@@ -292,8 +292,8 @@ Context objects can be modified to include custom parameters that can then be ac
 When downstream lambdas are invoked they cam access the context object as a key within the event object. Take for example the following sample lambda event object.
 
 ```
-2022-05-20T08:09:58.116Z	1c1c55e3-6ec1-47fb-962f-d94387e10480	INFO	{
-  resourceId: 'hdo0nl',
+{
+  resourceId: '2423fs',
   authorizer: {
     firstName: 'Anakin',
     lastName: 'Skywalker',
@@ -307,7 +307,7 @@ When downstream lambdas are invoked they cam access the context object as a key 
   extendedRequestId: 'SajxWGotSwMFoIw=',
   requestTime: '20/May/2022:08:09:57 +0000',
   path: '/multiTenantStack/cart/1653034194717',
-  accountId: '935741529896',
+  accountId: 'xxxxxxxxx',
   protocol: 'HTTP/1.1',
   stage: 'multiTenantStack',
   domainPrefix: 'htieqffa0l',
@@ -318,7 +318,7 @@ When downstream lambdas are invoked they cam access the context object as a key 
     accountId: null,
     cognitoIdentityId: null,
     caller: null,
-    sourceIp: '180.150.83.218',
+    sourceIp: 'xxx.xxx.xx.xxx',
     principalOrgId: null,
     accessKey: null,
     cognitoAuthenticationType: null,
@@ -327,8 +327,8 @@ When downstream lambdas are invoked they cam access the context object as a key 
     userAgent: 'axios/0.21.4',
     user: null
   },
-  domainName: 'htieqffa0l.execute-api.ap-southeast-2.amazonaws.com',
-  apiId: 'htieqffa0l'
+  domainName: 'apiId.execute-api.ap-southeast-2.amazonaws.com',
+  apiId: 'apiId'
 }
 ```
 
