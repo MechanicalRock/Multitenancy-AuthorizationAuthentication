@@ -1,4 +1,4 @@
-![image](multi-tenancy.png)
+![image](multitenant.png)
 
 # Contents
 
