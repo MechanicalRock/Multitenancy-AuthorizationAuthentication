@@ -281,7 +281,7 @@ Consider a scenario where we'd like to build an e-commerce web application. To k
 
 To create a secure `multi-tenant` environment there needs to be some notion of `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem it was decided that it is necessary to assign a unique identifier called `tenantID` to each user/customer. The aforementioned `tenantID` is a composite string that is generated and then attached to the calling user as a `custom attribute` during the registration stage.
 
-After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so,the application will exclusively use id tokens for authorization/authentication purposes.
+After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so, the application will exclusively use id tokens for authorization/authentication purposes.
 
 #### Lambda Context Objects
 
@@ -350,7 +350,7 @@ The table provided below is a representation of how the data stored in the purch
 When the Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API and dynamoDB table depending on the outcome of the Lambda Authorizer's token claims verification.
 
 All Allow-Policies generated will allow the authenticated user to only access data that has a partition key which matches their tenant id. This is achieved by making use of DynamoDB's `dynamodb:LeadingKeys` condition key for fine grained access control.
-In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within DynamodDB tables. Employing the use of this mechanism guarentees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
+In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within DynamodDB tables. Employing the use of this mechanism guarantees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
 
 ![image](dynamdbFineGrainedAccess.png)
 
