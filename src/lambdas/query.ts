@@ -28,9 +28,10 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
   const dynamoDBAdapter = new DynamoDbAdapter(dynamoDBClient, tableName)
   const res = await dynamoDBAdapter.getAll(queryCart)
-  if (!res.success) throw new Error(res.response as string)
+  var status = 200
+  if (!res.success) status = 500
   return {
-    statusCode: 200,
+    statusCode: status,
     body: JSON.stringify(res),
   }
 }

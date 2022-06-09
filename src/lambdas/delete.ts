@@ -16,9 +16,10 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
   let ctx: IContext = event.requestContext.authorizer as IContext
   const dynamoDBAdapter = new DynamoDbAdapter(dynamoDBClient, tableName)
   const res = await dynamoDBAdapter.delete(ctx.tenantId, parseInt(param.itemId))
-  if (!res.success) throw new Error(res.response as string)
+  var status = 200
+  if (!res.success) status = 500
   return {
-    statusCode: 200,
+    statusCode: status,
     body: JSON.stringify(res),
   }
 }

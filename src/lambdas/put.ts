@@ -17,9 +17,10 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
   const item: IDbSchema = JSON.parse(event.body as string) as IDbSchema
   const dynamoDBAdapter = new DynamoDbAdapter(dynamoDBClient, tableName)
   const res = await dynamoDBAdapter.put(item)
-  if (!res.success) throw new Error(res.response as string)
+  var status = 200
+  if (!res.success) status = 500
   return {
-    statusCode: 200,
+    statusCode: status,
     body: JSON.stringify(res),
   }
 }

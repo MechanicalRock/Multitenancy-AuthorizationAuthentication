@@ -9,9 +9,9 @@
     - [ID Token](#id-token)
     - [Access Token](#access-token)
     - [Refresh Token](#refresh-token)
-  - [Lambda Authorizer](#lambda-authorizer)
-    - [Lambda Authorizer Input Sample](#lambda-authorizer-input-sample)
-    - [Lambda Authorizer Output Sample](#lambda-authorizer-output-sample)
+  - [Lambda authoriser](#lambda-authoriser)
+    - [Lambda authoriser Input Sample](#lambda-authoriser-input-sample)
+    - [Lambda authoriser Output Sample](#lambda-authoriser-output-sample)
     - [Verifying tokens](#verifying-tokens)
       - [Verify structure of token](#verify-structure-of-token)
       - [Verify signature](#verify-signature)
@@ -26,7 +26,7 @@
       - [Lambda Context Objects](#lambda-context-objects)
       - [Multi-tenant DynamoDB table](#multi-tenant-dynamodb-table)
         - [Fine Grained Access Control](#Fine-Grained-Access-Control)
-          - [Lambda Authorizer Resource Policies](#Lambda-Authorizer-Resource-Policies)
+          - [Lambda authoriser Resource Policies](#Lambda-authoriser-Resource-Policies)
             - [Token Verification failed](#Token-Verification-failed)
             - [Token Verification passed](#Token-Verification-passed)
 
@@ -87,20 +87,17 @@
 
 ## Background Knowledge
 
-###
+### Authentication vs Authorisation
 
-For new developers, it is not immediately obvious that there is a difference between the terms Authorization and Authentication. Although related, these terms actually refer to two different concepts. Authentication verifies a user's identity whereas authorization verifies what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorization is about what they are allowed to access once they are in.
+For new developers, it is not immediately obvious that there is a difference between the terms authentication and authorisation. Although related, these terms actually refer to two different concepts. Authentication verifies a user's identity whereas authorisation verifies what a user is allowed to access once they have been authenticated. In short, authentication is about who is allowed in and authorisation is about what they are allowed to access once they are in. This article will focus on how `API Gateway` uses lambda, `Lamdba Authoriser`, for user authorisation.
 
-In this write up I'll demonstrate how one might go about using Cognito to develop the authentication and authorization layer in a contextualised scenario.
+### JWT
 
-### JSON Web Tokens
+JWT is an open standard that is widely used to securely share authentication information (claims) between client and server. The standard is defined in the RFC7519 specification developed by the Internet Engineering Taskforce (IETF).
 
-JWT, JSON Web Token, is an open standard that is widely used to securely share authentication information (claims) between client and server. The standard is defined in the RFC7519 specification developed by the Internet Engineering Taskforce (IETF).
-
-Valid JWTs contains three sections that are encoded as base64url strings separated by dot characters as shown below
+Valid JWTs contains three sections that are encoded as base64url strings separated by dot characters as shown below.
 
 ```
-
 1. Header
 2. Payload
 3. Signature
@@ -108,15 +105,54 @@ Valid JWTs contains three sections that are encoded as base64url strings separat
 <Header>.<Payload>.<Signature>
 ```
 
+##### Header
+
+The header consists of two parts, a key id `kid` and the algorithm `alg` used to sign the token.
+
+```
+{
+  "kid": "abcdefghijklmnopqrsexample=",
+ "alg": "RS256"
+ }
+
+```
+
+##### Payload
+
+The payload contains information about the user as well as other information necessary for token verification/authorisation. Collectively, The information contained in the payload is usually referred to as `token claims`. When a token is verified for authorisation it is this information that must be checked/validated.
+
+```
+{
+  "sub": "aaaaaaaa-bbbb-cccc-dddd-example",
+  "aud": "xxxxxxxxxxxxexample",
+  "email_verified": true,
+  "token_use": "id",
+  "auth_time": 1500009400,
+  "iss": "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_example",
+  "cognito:username": "anaya",
+  "exp": 1500013000,
+  "given_name": "Anaya",
+  "iat": 1500009400,
+  "email": "anaya@example.com"
+}
+```
+
+##### Signature
+
+The signature section is a security feature that makes it virtually impossible for bad actors to tamper with tokens. This section is the hashed and encrypted combination of both the the header and the payload sections. During token authorisation, the hash is decrypted and compared with the hash of the header and payload sections. If the two do not match, the token is considered invalid and thus unauthorized.
+
 ### Cognito JWTs
 
 AWS has adopted and adapted the RFC7519 standard for use with the Cognito service.
-When a user successfully authenticates with cognito, cognito does the following -
+When a user authenticates with cognito, three JWTs are issued:
 
-1. creates a session
-2. returns (3) JWTs - access token, id token and refresh token.
+- `id token`
+- `access token`
+- `refresh token`
 
-The tokens created by cognito can be used to grant access to server-side resources such as API Gateway resource paths. Alternatively they can be exchanged for temporary AWS credentials in order to access other AWS services.
+One or all of these tokens can be passed to a custom lambda function for authorisation purposes. In this article we'll look at all three tokens and how they relate to user authorisation.
+
+The tokens created by cognito can be used to grant access to server-side resources such as API Gateway resource paths, data stored in DynamoDb and/or S3 buckets.
 
 ### ID Token
 
@@ -136,15 +172,13 @@ A refresh token is used to retrieve new access tokens. Refresh tokens have a def
 
 When a refresh token expires, the user must re-authenticate by signing in again.
 
-## Lambda Authorizer
+## Token Lambda authoriser
 
-There are two types of Lambda Authorizers, `REQUEST` based and `TOKEN` based. This write up focuses on the latter.
+A token based lambda authoriser receives the caller's identity in the form of a bearer token included in the request's header section while a request based lambda authoriser receives the caller's identity in a combination of headers and query string parameters.
 
-A token based lambda authorizer receives the caller's identity in the form of a bearer token included in the request's header section while a request based lambda authorizer receives the caller's identity in a combination of headers and query string parameters.
+When a request is received by an API gateway instance that is configured to use a `TOKEN` lambda authoriser for authorisation purposes, the `bearer token` contained in the request header is forwarded to the lambda authoriser for verification. The forwarded payload is a JSON object that assumes a structure similar to the one shown in the `Input Sample` code block shown below .
 
-When a request is received by an API gateway instance that is configured to use a `TOKEN` lambda authorizer for authorization purposes, the `bearer token` contained in the request header is forwarded to the lambda authorizer for verification. The forwarded payload is a JSON object that assumes a structure similar to the one shown in the `Input Sample` code block shown below .
-
-###### Lambda Authorizer Input Sample
+###### Lambda authoriser Input Sample
 
 ```
 {
@@ -154,9 +188,9 @@ When a request is received by an API gateway instance that is configured to use 
 }
 ```
 
-###### Lambda Authorizer Output Sample
+###### Lambda authoriser Output Sample
 
-Once the token is verified, the Lambda Authorizer should return an output that assumes a structure such as the one provided below.
+Once the token is verified, the Lambda authoriser should return an output that assumes a structure such as the one provided below.
 
 ```
 {
@@ -179,8 +213,9 @@ Once the token is verified, the Lambda Authorizer should return an output that a
 ```
 
 - The principalId is the user id associated with the token sent by the client.
-- If the API uses a usage plan and the apiKeySource is set to AUTHORIZER, the lambda authorizer output must include the usage plan's API keys as the `usageIdentifierKey` property value- The principalId is the user id associated with the token sent by the client.
-- If the API uses a usage plan and the apiKeySource is set to AUTHORIZER, the lambda authorizer output must include the usage plan's API keys as the `usageIdentifierKey` property value
+- If the API uses a usage plan and the apiKeySource is set to authoriser, the lambda authoriser output must include the usage
+  plan's API keys as the `usageIdentifierKey` property value- The principalId is the user id associated with the token sent by the client.
+- If the API uses a usage plan and the apiKeySource is set to authoriser, the lambda authoriser output must include the usage plan's API keys as the `usageIdentifierKey` property value
 
 ### Verifying tokens
 
@@ -248,7 +283,7 @@ Each `JWK` contains an `n` parameter that contains the `modulus value` of the `R
 This is the value that'll be used to derive the `issuer's signature`.
 The JWK will need to be `converted to PEM format` before that can happen.
 
-#### Verify the claims
+#### Verify The Claims
 
 1. Verify that the token is not expired.
 
@@ -256,57 +291,55 @@ The JWK will need to be `converted to PEM format` before that can happen.
 
 3. The issuer (iss) claim should match your user pool. For example, a user pool created in the us-east-1 Region will have the following iss value:`https://cognito-idp.us-east-1.amazonaws.com/<userpoolID>`
 
-4. Check the `token_use` claim.
+4. Check the `token_use` claim conforms to the type of token you intend to use, `id` for id tokens and `access` for access tokens
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you are only accepting the access token in your web API operations, its value must be access.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you are only using the ID token, its value must be id.
-
-## Scenario: Multi-tenant purchase tracking microservice
+### Multi-Tenancy Example
 
 Consider a scenario where we'd like to build an e-commerce web application. To keep things simple let's contextualize the scenario so that we only have one micro service that uses a multi tenant dynamoDb table to store/retrieve customer shopping carts. The persistence layer will consist of 4 lambdas that perform `DELETE`, `PUT`, `QUERY` and `UPDATE` actions. An architectural diagram for this scenario has been provided below.
 
 ![image](arch.png)
 
 1. Users authenticate with a username and password, the web app passes these to amazon cognito for validation.
-2. If the supplied credentials (username and password) are valid, cognito creates a session and subsequently issues three (3) JWTs (JSON Web Tokens). The aforementioned tokens are id token, access token and a refresh token. The authenticated user can now send requests to api gateway along with with the id token in the headers section.
-3. API gateway sends the received id token to a lambda function called an authorizer.
-4. The authorizer function verifies the claims attached to the id token.
-5. The authorizer returns a policy and context.
-6. API Gateway evaluates the policy and forwards the request to a lambda function along with the authorizer generated context.
-7. The lambda function writes/reads data according to the tenantId listed in the forwarded context.
+2. If the supplied credentials (username and password) are valid, cognito creates a session and subsequently issues three (3) JWTs. The aforementioned tokens are id token, access token and a refresh token. The authenticated user can now send requests to api gateway along with with the id token in the headers section.
+3. API gateway sends the received id token to a lambda function called an authoriser.
+4. The authoriser function verifies the claims attached to the id token.
+5. The authoriser returns a policy and context.
+6. API Gateway evaluates the policy and forwards the request to a lambda function along with the authoriser generated context.
+7. The lambda function writes/reads data to/from the database using the `tenantId`
 8. A response is returned by the lambda function.
 
 ### Tenant Isolation
 
 #### Tenant ID
 
-To create a secure `multi-tenant` environment there needs to be some notion of `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. To solve this problem it was decided that it is necessary to assign a unique identifier called `tenantID` to each user/customer. The aforementioned `tenantID` is a composite string that is generated and then attached to the calling user as a `custom attribute` during the registration stage.
+To create a secure `multi-tenant` environment we require `tenant resource isolation`. In essence, `tenant A` should not be able to access the resources of `tenant B` and vice versa. We can achieve resource isolation by assigning a unique identifier, `tenantID`, to each user/customer. The `tenantID` is a composite string that is generated and then attached to the calling user as a `custom attribute` during registration.
 
-After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. In saying so, the application will exclusively use id tokens for authorization/authentication purposes.
+After successful authentication the `tenantID` custom attribute becomes available as a parameter within the `ID token` as a parameter with the following key `custom:tenantID`. It is important to note that access tokens do not carry any of the user's custom attributes, only id tokens have this capability. This application only uses id tokens for authentication/authorisation purposes.
 
 #### Lambda Context Objects
 
 In order to make use of the idea of a `tenantID` it is important to realise that there needs to be some way of retrieving the correct `tenantID` parameter and propagating it to the running lambda function's execution scope. This is where the idea of Lambda context objects comes into play.
 
-Context objects can be modified to include custom parameters that can then be accessed during run time. With this in mind, it should be relatively straight forward to use the application's Lambda Authorizer to forward the retrieved `tenantID` as a custom parameter within the JSON output of the lambda authorizer.
+Context objects can be modified to include custom parameters that can then be accessed during run time. With this in mind, it should be relatively straight forward to use the application's Lambda authoriser to forward the retrieved `tenantID` as a custom parameter within the JSON output of the lambda authoriser.
 
 When downstream lambdas are invoked they cam access the context object as a key within the event object. Take for example the following sample lambda event object.
 
+`Remember to remove calls to console.log() if you are logging sensitive information `
+
 ```
 {
-  resourceId: '2423fs',
-  authorizer: {
+  resourceId: 'xxxxxxxx',
+  authoriser: {
     firstName: 'Anakin',
     lastName: 'Skywalker',
     org: 'galactic empire',
     tenantId: 'sith-inc-100',
-    principalId: '24da3e19-0417-4e85-a9ed-078b9dcfb919',
+    principalId: 'xxxx-xxx-xxxx-xx-xxxxx',
     integrationLatency: 0
   },
   resourcePath: '/cart/{itemId}',
   httpMethod: 'PATCH',
-  extendedRequestId: 'SajxWGotSwMFoIw=',
+  extendedRequestId: 'xxxxxxxxxx',
   requestTime: '20/May/2022:08:09:57 +0000',
   path: '/multiTenantStack/cart/1653034194717',
   accountId: 'xxxxxxxxx',
@@ -314,7 +347,7 @@ When downstream lambdas are invoked they cam access the context object as a key 
   stage: 'multiTenantStack',
   domainPrefix: 'htieqffa0l',
   requestTimeEpoch: 1653034197210,
-  requestId: 'f260bfad-f7f3-4641-b492-6bbbff99de74',
+  requestId: 'xxx-f7f3-4641-xxx-xxxxx,
   identity: {
     cognitoIdentityPoolId: null,
     accountId: null,
@@ -342,21 +375,21 @@ The table provided below is a representation of how the data stored in the purch
 
 |     tenantID     | itemID      |  price   | qty | description |
 | :--------------: | :---------- | :------: | :-: | :---------: |
-| `Customer1-xcv9` | `timestamp` | `number` |     |  `string`   |
-| `Customer2-dgf1` | `timestamp` | `number` |     |  `string`   |
-| `Customer1-xcv9` | `timestamp` | `number` |     |  `string`   |
-| `Customer2-dgf1` | `timestamp` | `number` |     |  `string`   |
+| `Customer1-xcv9` | `timestamp` | `number` | `1` |  `string`   |
+| `Customer2-dgf1` | `timestamp` | `number` | `2` |  `string`   |
+| `Customer1-xcv9` | `timestamp` | `number` | `2` |  `string`   |
+| `Customer2-dgf1` | `timestamp` | `number` | `2` |  `string`   |
 
 ### Fine Grained Access Control
 
-When the Lambda Authorizer is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authorizer-output-sample). The policy should allow/deny access to the API and dynamoDB table depending on the outcome of the Lambda Authorizer's token claims verification.
+When the Lambda authoriser is invoked it is expected to return a JSON object that not only includes a context object that contains the `tenantID` parameter but also a resource policy as detailed [here](#lambda-authoriser-output-sample). The policy should allow/deny access to the API and dynamoDB table depending on the outcome of the Lambda authoriser's token claims verification.
 
 All Allow-Policies generated will allow the authenticated user to only access data that has a partition key which matches their tenant id. This is achieved by making use of DynamoDB's `dynamodb:LeadingKeys` condition key for fine grained access control.
 In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row level access control within DynamodDB tables. Employing the use of this mechanism guarantees a reliable and secure multitenant environment as well as the added benefit of a simplified data persistence layer.
 
 ![image](dynamdbFineGrainedAccess.png)
 
-#### Lambda Authorizer Resource Policies
+#### Lambda authoriser Resource Policies
 
 ###### Token Verification failed
 
@@ -398,3 +431,7 @@ In essence, the `dynamodb:LeadingKeys` condition key is a mechanism for row leve
     ]
 }
 ```
+
+#### Wrapping Up.
+
+Congratulations, you have reached the end of the tutorial. If you have any questions or if you think we can help speed up your development journey, please don't hesitate to get in touch with us here at [Mechanical Rock](<(https://www.mechanicalrock.io/lets-get-started/)>).
